@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-
     <Authors>DodingDaga</Authors>
     <Company>Bratatat</Company>
     <Version>7.2.0.1</Version>
@@ -26,8 +25,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="12.0.0" />
-    <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+    <PackageReference Include="DalamudPackager" Version="13.0.0" />
+    <PackageReference Include="ECommons" Version="3.0.1.5" />
     <Reference Include="FFXIVClientStructs">
       <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
       <Private>false</Private>
@@ -40,8 +39,8 @@
       <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="ImGui.NET">
-      <HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>
+    <Reference Include="Dalamud.Bindings.ImGui">
+      <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGui.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="ImGuiScene">
