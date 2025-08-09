@@ -5,10 +5,12 @@ This is a fork of the original PuppetMaster from [DodingDaga](https://github.com
 
 ## Install
 
-Add the following repository to custom repo to your plugin sources
+Add the following repository url to your Custom Plugin Repositories list in the experimental tab of Dalamud Setting
 ```
 https://raw.githubusercontent.com/kana-ki/PuppetMaster/refs/heads/main/PuppetMaster.json
 ```
+
+Find "Puppet Master" in the Plugin Installer, and hit Install.
 
 ## Setup
 
