@@ -1,48 +1,22 @@
 [
   {
-    "Author": "DodingDaga",
+    "Author": "DodingDaga, Kana Ki",
     "Name": "Puppet Master",
-    "InternalName": "PuppetMaster",
-    "AssemblyVersion": "7.2.0.1",
-    "Description": "For the lulz",
-    "ApplicableVersion": "any",
-    "RepoUrl": "https://github.com/dodingdaga/DalamudPlugins",
-    "Tags": [
-      "emote",
-      "plugin"
-    ],
-    "DalamudApiLevel": 12,
-    "LoadPriority": 0,
+    "InternalName": "puppetmaster",
+    "AssemblyVersion": "7.2.1",
+    "Description": "Allows others to control you via the game's text commands",
     "Punchline": "Let others tell you what to do.",
-    "IsHide": false,
-    "IsTestingExclusive": false,
-    "DownloadCount": 0,
-    "LastUpdated": "1743496245",
-    "DownloadLinkInstall": "https://github.com/dodingdaga/DalamudPlugins/releases/download/pp7.2.0.1/latest_pp.zip",
-    "DownloadLinkTesting": "https://github.com/dodingdaga/DalamudPlugins/releases/download/pp7.2.0.1/latest_pp.zip",
-    "DownloadLinkUpdate": "https://github.com/dodingdaga/DalamudPlugins/releases/download/pp7.2.0.1/latest_pp.zip"
-  },
-  {
-    "Author": "DodingDaga",
-    "Name": "Right Back At You",
-    "InternalName": "Copycat",
-    "AssemblyVersion": "7.2.0.1",
-    "Description": "For the lulz",
     "ApplicableVersion": "any",
-    "RepoUrl": "https://github.com/dodingdaga/DalamudPlugins",
+    "RepoUrl": "https://github.com/kana-ki/PuppetMaster",
     "Tags": [
-      "plugin",
-      "emote"
+      "emote", "plugin", "puppet", "master", "control", "dom", "sub"
     ],
-    "DalamudApiLevel": 12,
+    "DalamudApiLevel": 13,
     "LoadPriority": 0,
-    "Punchline": "Nothing but a second-rate, trying hard, copycat!",
     "IsHide": false,
     "IsTestingExclusive": false,
-    "DownloadCount": 0,
-    "LastUpdated": "1746126063",
-    "DownloadLinkInstall": "https://github.com/dodingdaga/DalamudPlugins/releases/download/pp7.2.0.1/latest_cc.zip",
-    "DownloadLinkTesting": "https://github.com/dodingdaga/DalamudPlugins/releases/download/pp7.2.0.1/latest_cc.zip",
-    "DownloadLinkUpdate": "https://github.com/dodingdaga/DalamudPlugins/releases/download/pp7.2.0.1/latest_cc.zip"
+    "DownloadLinkInstall": "https://github.com/kana-ki/PuppetMaster/releases/download/v7.2.1/PuppetMaster_7.2.1.zip",
+    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v7.2.1/PuppetMaster_7.2.1.zip",
+    "DownloadLinkUpdate": "https://github.com/kana-ki/PuppetMaster/releases/download/v7.2.1/PuppetMaster_7.2.1.zip"
   }
 ]

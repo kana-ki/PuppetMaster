@@ -1,8 +1,8 @@
 {
-  "Author": "DodingDaga",
+  "Author": "DodingDaga, Kana Ki",
   "Name": "Puppet Master",
   "Punchline": "Let others tell you what to do.",
-  "Description": "For the lulz",
+  "Description": "Allows others to control you via the game's text commands",
   "InternalName": "puppetmaster",
   "ApplicableVersion": "any",
   "Tags": [

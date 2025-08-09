@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors>DodingDaga</Authors>
-    <Company>Bratatat</Company>
-    <Version>7.2.0.1</Version>
+    <Product>Puppet Master</Product>
     <Description>Let others tell you what to do</Description>
-    <Copyright></Copyright>
+    <Authors>DodingDaga, Kana Ki</Authors>
+    <Version>7.2.1</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup>
