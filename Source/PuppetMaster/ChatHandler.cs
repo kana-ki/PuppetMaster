@@ -59,7 +59,7 @@ public static class ChatHandler
                         if (textCommand.Main == "/wait" && float.TryParse(textCommand.Args, out var seconds))
                             await Task.Delay((int)(Math.Clamp(seconds, 0.0, 60.0) * 1000.0));
                         else
-                            Chat.Instance.SendMessage($"{textCommand}");
+                            Chat.SendMessage($"{textCommand}");
                     }
                 }
 #if DEBUG
@@ -85,13 +85,15 @@ public static class ChatHandler
             (!usingRegex && Service.configuration.Reactions[index].Rx!.ToString().IsNullOrWhitespace()))
         {
 #if DEBUG
-            Service.ChatGui.PrintError($"[PuppetMasster][ERR] Empty RegEx [{message}]");
+            Service.ChatGui.PrintError($"[PuppetMaster][ERR] Empty RegEx [{message}]");
 #endif
             return;
         }
 
         // Find command in message
-        var matches = usingRegex ? Service.configuration.Reactions[index].CustomRx!.Matches(message) : Service.configuration.Reactions[index].Rx!.Matches(message);
+        var matches = usingRegex ? 
+                          Service.configuration.Reactions[index].CustomRx!.Matches(message) :
+                          Service.configuration.Reactions[index].Rx!.Matches(message);
         if (matches.Count == 0) return;
         var command = string.Empty;
         try
@@ -103,7 +105,7 @@ public static class ChatHandler
 
 
         var lines = MyRegex.Split(command.ToString());
-        RunMacroAsync(lines, index);
+        _ = RunMacroAsync(lines, index);
     }
     
 }

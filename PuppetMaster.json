@@ -3,7 +3,7 @@
     "Author": "DodingDaga, Kana Ki",
     "Name": "Puppet Master",
     "InternalName": "puppetmaster",
-    "AssemblyVersion": "7.2.1",
+    "AssemblyVersion": "8.0.0",
     "Description": "Allows others to control you via the game's text commands",
     "Punchline": "Let others tell you what to do.",
     "ApplicableVersion": "any",
@@ -11,12 +11,12 @@
     "Tags": [
       "emote", "plugin", "puppet", "master", "control", "dom", "sub"
     ],
-    "DalamudApiLevel": 13,
+    "DalamudApiLevel": 14,
     "LoadPriority": 0,
     "IsHide": false,
     "IsTestingExclusive": false,
-    "DownloadLinkInstall": "https://github.com/kana-ki/PuppetMaster/releases/download/v7.2.1/PuppetMaster_7.2.1.zip",
-    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v7.2.1/PuppetMaster_7.2.1.zip",
-    "DownloadLinkUpdate": "https://github.com/kana-ki/PuppetMaster/releases/download/v7.2.1/PuppetMaster_7.2.1.zip"
+    "DownloadLinkInstall": "https://github.com/kana-ki/PuppetMaster/releases/download/v8.0.0/PuppetMaster_8.0.0.zip",
+    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v8.0.0/PuppetMaster_8.0.0.zip",
+    "DownloadLinkUpdate": "https://github.com/kana-ki/PuppetMaster/releases/download/v8.0.0/PuppetMaster_8.0.0.zip"
   }
 ]

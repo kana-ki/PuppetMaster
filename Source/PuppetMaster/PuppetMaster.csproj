@@ -1,61 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <Product>Puppet Master</Product>
-    <Description>Let others tell you what to do</Description>
-    <Authors>DodingDaga, Kana Ki</Authors>
-    <Version>7.2.1</Version>
-    <AssemblyVersion>$(Version)</AssemblyVersion>
-    <FileVersion>$(Version)</FileVersion>
-  </PropertyGroup>
+<Project Sdk="Dalamud.NET.Sdk/14.0.0">
+    <PropertyGroup>
+        <Product>Puppet Master</Product>
+        <Description>Let others tell you what to do</Description>
+        <Authors>DodingDaga, Kana Ki</Authors>
+        <Version>8.0.0</Version>
+        <AssemblyVersion>$(Version)</AssemblyVersion>
+        <FileVersion>$(Version)</FileVersion>
+        <TargetFrameworks>net10.0-windows</TargetFrameworks>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net9.0-windows8.0</TargetFramework>
-    <Platforms>x64</Platforms>
-    <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Platforms>x64</Platforms>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="13.0.0" />
-    <PackageReference Include="ECommons" Version="3.0.1.5" />
-    <Reference Include="FFXIVClientStructs">
-      <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Dalamud">
-      <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Dalamud.Bindings.ImGui">
-      <HintPath>$(DalamudLibPath)Dalamud.Bindings.ImGui.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="ImGuiScene">
-      <HintPath>$(DalamudLibPath)ImGuiScene.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Lumina">
-      <HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Lumina.Excel">
-      <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="ECommons" Version="3.1.0.6" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
+        <PackageReference Update="DalamudPackager" Version="14.0.1" />
+    </ItemGroup>
 
 </Project>
