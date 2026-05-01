@@ -8,5 +8,11 @@
   "Tags": [
     "plugin",
     "emote"
-  ]
+  ],
+  "DalamudApiLevel": 15,
+  "LoadRequiredState": 0,
+  "LoadSync": false,
+  "CanUnloadAsync": false,
+  "LoadPriority": 0,
+  "AcceptsFeedback": true
 }

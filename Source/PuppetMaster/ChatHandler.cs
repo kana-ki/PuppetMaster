@@ -4,6 +4,7 @@ using Dalamud.Utility;
 using System;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Dalamud.Game.Chat;
 using ECommons.Automation;
 
 namespace PuppetMaster;
@@ -11,25 +12,27 @@ namespace PuppetMaster;
 public static class ChatHandler
 {
     private static Regex MyRegex = new ("\r\n|\r|\n");
-    
-    public static void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
+
+    public static void OnChatMessage(IHandleableChatMessage message)
     {
-        if (Service.configuration!.DebugLogTypes && type != XivChatType.Debug)
+        if (Service.configuration!.DebugLogTypes && message.LogKind != XivChatType.Debug)
         {
-            var prefix = int.TryParse(type.ToString(), out var number)?"[" + number + "]":"[" + ((int)type) + "][" + type + "]";
-            prefix += (sender.ToString().IsNullOrEmpty() ? "" : "<" + sender + "> ");
-            Service.ChatGui.Print(prefix+" "+message);
+            var prefix = int.TryParse(message.LogKind.ToString(), out var number)
+                             ? "[" + number + "]"
+                             : "[" + ((int)message.LogKind) + "][" + message.LogKind + "]";
+            prefix += (message.Sender.ToString().IsNullOrEmpty() ? "" : "<" + message.Sender + "> ");
+            Service.ChatGui.Print(prefix + " " + message.Message);
         }
 
-        if (isHandled) return;
+        if (message.IsHandled) return;
 
         for (var index = 0; index < Service.configuration.Reactions.Count; index++)
         {
             if (Service.configuration.Reactions[index].Enabled)
-                DoCommand(index, type, message.ToString());
+                DoCommand(index, message.LogKind, message.Message.ToString());
         }
     }
-    
+
     private static async Task RunMacroAsync(string[] lines, int index)
     {
         Service.semaphore.WaitOne();

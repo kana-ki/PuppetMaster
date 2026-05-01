@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/14.0.0">
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
     <PropertyGroup>
         <Product>Puppet Master</Product>
         <Description>Let others tell you what to do</Description>
         <Authors>DodingDaga, Kana Ki</Authors>
-        <Version>8.0.0</Version>
+        <Version>9.0.0</Version>
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <FileVersion>$(Version)</FileVersion>
         <TargetFrameworks>net10.0-windows</TargetFrameworks>
