@@ -12,7 +12,7 @@ namespace PuppetMaster
     {
         public const String Name = "Puppet Master settings";
 
-        private static Service.ParsedTextCommand TextCommand = new();
+        private static TextCommand TextCommand = new();
         private static int CurrentReactionIndex;
 
 

@@ -111,40 +111,9 @@ internal class Service
             try { configuration.Reactions[index].Rx = new Regex(GetDefaultRegex(index)); } catch (Exception) { }
     }
 
-    public struct ParsedTextCommand
+    public static TextCommand GetTestInputCommand(int index)
     {
-        public ParsedTextCommand() {}
-        public string Main = string.Empty;
-        public string Args = string.Empty;
-
-        public override readonly string ToString()
-        {
-            return (Main + " " + Args).Trim();
-        }
-    }
-
-    public static ParsedTextCommand FormatCommand(string command)
-    {
-        ParsedTextCommand textCommand = new();
-        if (command != string.Empty)
-        {
-            command = command.Trim();
-            if (command.StartsWith('/'))
-            {
-                command = command.Replace('[', '<').Replace(']', '>');
-                var space = command.IndexOf(' ');
-                textCommand.Main = (space == -1 ? command : command[..space]).ToLower();
-                textCommand.Args = (space == -1 ? string.Empty : command[(space + 1)..]);
-            }
-            else
-                textCommand.Main = command;
-        }
-        return textCommand;
-    }
-
-    public static ParsedTextCommand GetTestInputCommand(int index)
-    {
-        ParsedTextCommand result = new();
+        TextCommand result = new();
 
         if (!IsValidReactionIndex(index) ||
             configuration!.Reactions[index].TestInput.IsNullOrWhitespace()) return result;
@@ -178,7 +147,7 @@ internal class Service
             }
             catch (Exception) { }
         }
-        result.Main = FormatCommand(result.Main).ToString();
+        result.Main = new TextCommand(result.Main).ToString();
         return result;
     }
 

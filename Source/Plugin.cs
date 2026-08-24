@@ -61,7 +61,7 @@ namespace PuppetMaster
                 DrawConfigUI();
             else
             {
-                var ptc = Service.FormatCommand($"/{args}");
+                var ptc = new TextCommand($"/{args}");
 #if DEBUG
                 Service.ChatGui.Print($"[PuppetMaster][Debug] PARSED TEXT COMMAND: {ptc}");
 #endif

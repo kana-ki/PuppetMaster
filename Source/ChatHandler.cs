@@ -41,7 +41,7 @@ public static class ChatHandler
 
         foreach (var line in lines)
         {
-            var textCommand = Service.FormatCommand(line);
+            var textCommand = new TextCommand(line);
             if (!string.IsNullOrEmpty(textCommand.Main))
             {
                 // Process emote
