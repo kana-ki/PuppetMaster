@@ -30,35 +30,34 @@ public class Plugin : IDalamudPlugin
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
-        var dalamud = pluginInterface.Create<DalamudServices>()
-                      ?? throw new InvalidOperationException("[PuppetMaster] Failed to inject Dalamud services");
-
         provider = new ServiceCollection()
-                   // Dalamud services
-                   .AddSingleton(dalamud.PluginInterface)
-                   .AddSingleton(dalamud.CommandManager)
-                   .AddSingleton(dalamud.ChatGui)
-                   .AddSingleton(dalamud.DataManager)
-                   // App services
-                   .AddSingleton<ReactionService>()
-                   .AddSingleton<EmoteRegistry>()
-                   .AddSingleton<ChatHandler>()
-                   .AddSingleton<ConfigWindow>()
-                   .BuildServiceProvider();
+           // Dalamud services
+           .AddSingleton(this.pluginInterface = pluginInterface)
+           .AddSingleton(this.commandManager = pluginInterface.GetRequiredService<ICommandManager>())
+           .AddSingleton(this.chatGui = pluginInterface.GetRequiredService<IChatGui>())
+           .AddSingleton(pluginInterface.GetRequiredService<IDataManager>())
+           .AddSingleton(pluginInterface.GetRequiredService<IPluginLog>())
+           // App services
+           .AddSingleton<ConfigurationProvider>()
+           .AddSingleton<ReactionService>()
+           .AddSingleton<EmoteRegistry>()
+           .AddSingleton<ChatHandler>()
+           .AddSingleton<ConfigWindow>()
+           .BuildServiceProvider();
 
         reactions = provider.GetRequiredService<ReactionService>();
         chatHandler = provider.GetRequiredService<ChatHandler>();
         configWindow = provider.GetRequiredService<ConfigWindow>();
-        
+
         windowSystem.AddWindow(configWindow);
 
-        dalamud.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
-        dalamud.CommandManager.AddHandler(CommandName2, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
-        
-        dalamud.ChatGui.ChatMessage += chatHandler.OnChatMessage;
-        dalamud.PluginInterface.UiBuilder.Draw += DrawUI;
-        dalamud.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-        dalamud.PluginInterface.UiBuilder.OpenMainUi += DrawConfigUI;
+        commandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
+        commandManager.AddHandler(CommandName2, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
+
+        chatGui.ChatMessage += chatHandler.OnChatMessage;
+        this.pluginInterface.UiBuilder.Draw += windowSystem.Draw;
+        this.pluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+        this.pluginInterface.UiBuilder.OpenMainUi += DrawConfigUI;
 
         ECommonsMain.Init(pluginInterface, this, ECommons.Module.All);
     }
@@ -68,7 +67,8 @@ public class Plugin : IDalamudPlugin
         windowSystem.RemoveAllWindows();
         chatGui.ChatMessage -= chatHandler.OnChatMessage;
         commandManager.RemoveHandler(CommandName);
-        pluginInterface.UiBuilder.Draw -= DrawUI;
+        commandManager.RemoveHandler(CommandName2);
+        pluginInterface.UiBuilder.Draw -= windowSystem.Draw;
         pluginInterface.UiBuilder.OpenConfigUi -= DrawConfigUI;
         pluginInterface.UiBuilder.OpenMainUi -= DrawConfigUI;
         GC.SuppressFinalize(this);
@@ -98,9 +98,6 @@ public class Plugin : IDalamudPlugin
         else if (subCommand.Main.Equals("/off"))
             enableReactions(false);
     }
-
-    private void DrawUI() =>
-        windowSystem.Draw();
 
     private void DrawConfigUI()
     {

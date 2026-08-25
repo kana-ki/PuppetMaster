@@ -1,9 +1,6 @@
-using Dalamud.Game.Text;
-using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -11,19 +8,17 @@ namespace PuppetMaster;
 
 internal class ReactionService
 {
-    private readonly IDalamudPluginInterface pluginInterface;
+    private readonly ConfigurationProvider configurationProvider;
     private readonly IChatGui chatGui;
 
-    public Configuration Configuration { get; private set; } = null!;
+    public Configuration Configuration => configurationProvider.Configuration;
     public Semaphore Semaphore { get; } = new(initialCount: 1, maximumCount: 1);
 
-    private const uint CHANNEL_COUNT = 23;
-
-    public ReactionService(IDalamudPluginInterface pluginInterface, IChatGui chatGui)
+    public ReactionService(ConfigurationProvider configurationProvider, IChatGui chatGui)
     {
-        this.pluginInterface = pluginInterface;
+        this.configurationProvider = configurationProvider;
         this.chatGui = chatGui;
-        InitializeConfig();
+        InitializeRegex();
     }
 
     public void SetEnabledAll(bool enabled = true)
@@ -134,96 +129,5 @@ internal class ReactionService
 
         result.Main = new TextCommand(result.Main).ToString();
         return result;
-    }
-
-    private static void MigrateConfiguration(Configuration configuration)
-    {
-        // Version 0 to 1 migration
-        if (configuration.Version == 0)
-        {
-            var enabledChannels = new List<int>();
-            foreach (var channel in configuration.EnabledChannels)
-            {
-                if (channel.Enabled)
-                    enabledChannels.Add(channel.ChatType);
-            }
-
-            configuration.Reactions =
-            [
-                new()
-                {
-                    Enabled = true,
-                    Name = "Reaction",
-                    TriggerPhrase = configuration.TriggerPhrase,
-                    AllowSit = configuration.AllowSit,
-                    MotionOnly = configuration.MotionOnly,
-                    AllowAllCommands = configuration.AllowAllCommands,
-                    UseRegex = configuration.UseRegex,
-                    CustomPhrase = configuration.CustomPhrase,
-                    ReplaceMatch = configuration.ReplaceMatch,
-                    TestInput = configuration.TestInput,
-                    EnabledChannels = enabledChannels,
-                }
-            ];
-            configuration.Version = 1;
-        }
-    }
-
-    private void InitializeConfig()
-    {
-        Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Configuration.Initialize(pluginInterface);
-
-        if (Configuration.Version < ConfigVersion.CURRENT)
-        {
-            MigrateConfiguration(Configuration);
-        }
-
-        if (Configuration.EnabledChannels.Count != CHANNEL_COUNT)
-        {
-            Configuration.EnabledChannels =
-            [
-                new() { ChatType = (int)XivChatType.CrossLinkShell1, Name = "CWLS1" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell2, Name = "CWLS2" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell3, Name = "CWLS3" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell4, Name = "CWLS4" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell5, Name = "CWLS5" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell6, Name = "CWLS6" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell7, Name = "CWLS7" },
-                new() { ChatType = (int)XivChatType.CrossLinkShell8, Name = "CWLS8" },
-                new() { ChatType = (int)XivChatType.Ls1, Name = "LS1" },
-                new() { ChatType = (int)XivChatType.Ls2, Name = "LS2" },
-                new() { ChatType = (int)XivChatType.Ls3, Name = "LS3" },
-                new() { ChatType = (int)XivChatType.Ls4, Name = "LS4" },
-                new() { ChatType = (int)XivChatType.Ls5, Name = "LS5" },
-                new() { ChatType = (int)XivChatType.Ls6, Name = "LS6" },
-                new() { ChatType = (int)XivChatType.Ls7, Name = "LS7" },
-                new() { ChatType = (int)XivChatType.Ls8, Name = "LS8" },
-                new() { ChatType = (int)XivChatType.TellIncoming, Name = "Tell" },
-                new() { ChatType = (int)XivChatType.Say, Name = "Say" },
-                new() { ChatType = (int)XivChatType.Party, Name = "Party" },
-                new() { ChatType = (int)XivChatType.Yell, Name = "Yell" },
-                new() { ChatType = (int)XivChatType.Shout, Name = "Shout" },
-                new() { ChatType = (int)XivChatType.FreeCompany, Name = "Free Company" },
-                new() { ChatType = (int)XivChatType.Alliance, Name = "Alliance" }
-            ];
-        }
-
-        InitializeRegex();
-
-        if (Configuration.Reactions.Count == 0)
-        {
-            Configuration.Reactions.Add(new Reaction() { Name = "Reaction" });
-        }
-
-        if (Configuration.CustomChannels.Count == 0)
-        {
-            Configuration.CustomChannels.Add(new ChannelSetting() { Name = "SystemMessage", ChatType = 57 });
-        }
-
-        // Always set to false on load
-        Configuration.DebugLogTypes = false;
-
-        Configuration.Save();
     }
 }
