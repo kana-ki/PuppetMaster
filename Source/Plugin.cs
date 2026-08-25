@@ -39,7 +39,7 @@ namespace PuppetMaster
             Service.PluginInterface.UiBuilder.OpenMainUi += DrawConfigUI;
 
             // Excel sheets
-            Service.InitializeEmotes();
+            EmoteRegistry.Initialize();
 
             // ECommons
             ECommonsMain.Init(pluginInterface, this, ECommons.Module.All);

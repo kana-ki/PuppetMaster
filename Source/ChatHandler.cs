@@ -45,7 +45,7 @@ public static class ChatHandler
             if (!string.IsNullOrEmpty(textCommand.Main))
             {
                 // Process emote
-                var isEmote = Service.Emotes.Contains(textCommand.Main);
+                var isEmote = EmoteRegistry.IsEmote(textCommand.Main);
                 if (isEmote)
                 {
                     if ((textCommand.Main == "/sit" || textCommand.Main == "/groundsit" || textCommand.Main == "/lounge") && !reaction.AllowSit)

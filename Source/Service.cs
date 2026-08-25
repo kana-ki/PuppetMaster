@@ -4,7 +4,6 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
-using Lumina.Excel.Sheets;
 
 using System;
 using System.Collections.Generic;
@@ -17,35 +16,9 @@ internal class Service
 {
     public static Plugin? plugin;
     public static Configuration? configuration;
-    public static Lumina.Excel.ExcelSheet<Emote>? emoteCommands;
-    public static HashSet<String> Emotes = [];
-
     public static Semaphore semaphore = new(initialCount:1, maximumCount:1);
 
     private const uint CHANNEL_COUNT = 23;
-
-    public static void InitializeEmotes()
-    {
-        emoteCommands = DataManager.GetExcelSheet<Emote>();
-        if (emoteCommands == null)
-            ChatGui.PrintError($"[PuppetMaster][Error] Failed to read Emotes list");
-        else
-        {
-            foreach (var emoteCommand in emoteCommands)
-            {
-                var cmd = emoteCommand.TextCommand.ValueNullable?.Command.ExtractText();
-                if (cmd != null && cmd != "") Emotes.Add(cmd);
-                cmd = emoteCommand.TextCommand.ValueNullable?.ShortCommand.ExtractText(); ;
-                if (cmd != null && cmd != "") Emotes.Add(cmd);
-                cmd = emoteCommand.TextCommand.ValueNullable?.Alias.ExtractText(); ;
-                if (cmd != null && cmd != "") Emotes.Add(cmd);
-                cmd = emoteCommand.TextCommand.ValueNullable?.ShortAlias.ExtractText(); ;
-                if (cmd != null && cmd != "") Emotes.Add(cmd);
-            }
-            if (Emotes.Count == 0)
-                ChatGui.PrintError($"[PuppetMaster][Error] Failed to build Emotes list");
-        }
-    }
 
     public static void SetEnabledAll(bool enabled = true)
     {
