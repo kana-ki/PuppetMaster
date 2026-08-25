@@ -1,97 +1,110 @@
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using System;
-
 using ECommons;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace PuppetMaster
+namespace PuppetMaster;
+
+public class Plugin : IDalamudPlugin
 {
-    public class Plugin : IDalamudPlugin
-    {
-        public static String Name => "PuppetMaster";
-        private const String CommandName = "/puppetmaster";
-        public WindowSystem windowSystem = new("PuppetMaster");
-        public ConfigWindow configWindow;
-
-        public Plugin(IDalamudPluginInterface pluginInterface)
-        {
-            // Service
-            pluginInterface.Create<Service>();
-            Service.plugin = this;
-            
-            // Configuration
-            Service.InitializeConfig();
-
-            this.configWindow = new ConfigWindow();
-            windowSystem.AddWindow(configWindow);
-
-            // Handlers
-            Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
-            {
-                HelpMessage = @"Open settings dialog
+    public static string Name => "PuppetMaster";
+    private const string CommandName = "/puppetmaster";
+    private const string CommandName2 = "/puppet";
+    private const string CommandHelp = @"Open settings dialog
 /puppetmaster on|off - enable or disable all reactions
-/puppetmaster on|off <ReactionName> - enable or disable reactions by name"
-            });
-            Service.ChatGui.ChatMessage += ChatHandler.OnChatMessage;
-            Service.PluginInterface.UiBuilder.Draw += DrawUI;
-            Service.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-            Service.PluginInterface.UiBuilder.OpenMainUi += DrawConfigUI;
+/puppetmaster on|off <ReactionName> - enable or disable reactions by name";
 
-            // Excel sheets
-            EmoteRegistry.Initialize();
+    private readonly ServiceProvider provider;
+    private readonly WindowSystem windowSystem = new("PuppetMaster");
 
-            // ECommons
-            ECommonsMain.Init(pluginInterface, this, ECommons.Module.All);
-        }
+    private readonly IDalamudPluginInterface pluginInterface;
+    private readonly ICommandManager commandManager;
+    private readonly IChatGui chatGui;
 
-        public void Dispose()
+    private readonly ReactionService reactions;
+    private readonly ChatHandler chatHandler;
+    private readonly ConfigWindow configWindow;
+
+    public Plugin(IDalamudPluginInterface pluginInterface)
+    {
+        var dalamud = pluginInterface.Create<DalamudServices>()
+                      ?? throw new InvalidOperationException("[PuppetMaster] Failed to inject Dalamud services");
+
+        provider = new ServiceCollection()
+                   // Dalamud services
+                   .AddSingleton(dalamud.PluginInterface)
+                   .AddSingleton(dalamud.CommandManager)
+                   .AddSingleton(dalamud.ChatGui)
+                   .AddSingleton(dalamud.DataManager)
+                   // App services
+                   .AddSingleton<ReactionService>()
+                   .AddSingleton<EmoteRegistry>()
+                   .AddSingleton<ChatHandler>()
+                   .AddSingleton<ConfigWindow>()
+                   .BuildServiceProvider();
+
+        reactions = provider.GetRequiredService<ReactionService>();
+        chatHandler = provider.GetRequiredService<ChatHandler>();
+        configWindow = provider.GetRequiredService<ConfigWindow>();
+        
+        windowSystem.AddWindow(configWindow);
+
+        dalamud.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
+        dalamud.CommandManager.AddHandler(CommandName2, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
+        
+        dalamud.ChatGui.ChatMessage += chatHandler.OnChatMessage;
+        dalamud.PluginInterface.UiBuilder.Draw += DrawUI;
+        dalamud.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+        dalamud.PluginInterface.UiBuilder.OpenMainUi += DrawConfigUI;
+
+        ECommonsMain.Init(pluginInterface, this, ECommons.Module.All);
+    }
+
+    public void Dispose()
+    {
+        windowSystem.RemoveAllWindows();
+        chatGui.ChatMessage -= chatHandler.OnChatMessage;
+        commandManager.RemoveHandler(CommandName);
+        pluginInterface.UiBuilder.Draw -= DrawUI;
+        pluginInterface.UiBuilder.OpenConfigUi -= DrawConfigUI;
+        pluginInterface.UiBuilder.OpenMainUi -= DrawConfigUI;
+        GC.SuppressFinalize(this);
+
+        ECommonsMain.Dispose();
+        provider.Dispose();
+    }
+
+    private void OnCommand(string command, string args)
+    {
+        if (string.IsNullOrWhiteSpace(args))
         {
-            windowSystem.RemoveAllWindows();
-            Service.ChatGui.ChatMessage -= ChatHandler.OnChatMessage;
-            Service.CommandManager.RemoveHandler(CommandName);
-            GC.SuppressFinalize(this);
-
-            ECommonsMain.Dispose();
+            DrawConfigUI();
+            return;
         }
-
-        private void OnCommand(String command, String args)
+        var subCommand = new TextCommand($"/{args}");
+        void enableReactions(bool enable)
         {
-            if (string.IsNullOrEmpty(args))
-                DrawConfigUI();
+            if (string.IsNullOrEmpty(subCommand.Args))
+                reactions.SetEnabledAll(enable);
             else
-            {
-                var ptc = new TextCommand($"/{args}");
-#if DEBUG
-                Service.ChatGui.Print($"[PuppetMaster][Debug] PARSED TEXT COMMAND: {ptc}");
-#endif
-                void enableReactions(bool enable)
-                {
-                    if (string.IsNullOrEmpty(ptc.Args))
-                        Service.SetEnabledAll(enable);
-                    else
-                        Service.SetEnabled(ptc.Args, enable);
-                }
-                if (ptc.Main.Equals("/on"))
-                {
-                    enableReactions(true);
-                }
-                else if (ptc.Main.Equals("/off"))
-                {
-                    enableReactions(false);
-                }
-            }
+                reactions.SetEnabled(subCommand.Args, enable);
         }
 
-        private void DrawUI()
-        {
-            this.windowSystem.Draw();
-        }
+        if (subCommand.Main.Equals("/on"))
+            enableReactions(true);
+        else if (subCommand.Main.Equals("/off"))
+            enableReactions(false);
+    }
 
-        private void DrawConfigUI()
-        {
-            this.configWindow.IsOpen = true;
-            ConfigWindow.PreloadTestResult();
-        }
+    private void DrawUI() =>
+        windowSystem.Draw();
+
+    private void DrawConfigUI()
+    {
+        configWindow.IsOpen = true;
+        configWindow.PreloadTestResult();
     }
 }

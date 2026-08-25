@@ -1,37 +1,46 @@
+using Dalamud.Plugin.Services;
 using Lumina.Excel.Sheets;
+
 using System.Collections.Generic;
 
 namespace PuppetMaster;
 
-internal static class EmoteRegistry
+internal class EmoteRegistry
 {
-    private static readonly HashSet<string> Emotes = [];
+    private readonly IChatGui chatGui;
+    private readonly HashSet<string> emotes = [];
 
-    public static void Initialize()
+    public EmoteRegistry(IDataManager dataManager, IChatGui chatGui)
     {
-        var emotes = Service.DataManager.GetExcelSheet<Emote>();
-        if (emotes == null)
+        this.chatGui = chatGui;
+        Load(dataManager);
+    }
+
+    private void Load(IDataManager dataManager)
+    {
+        var sheet = dataManager.GetExcelSheet<Emote>();
+        if (sheet == null)
         {
-            Service.ChatGui.PrintError($"[PuppetMaster][Error] Failed to read Emotes list");
+            chatGui.PrintError($"[PuppetMaster][Error] Failed to read Emotes list");
             return;
         }
 
-        foreach (var emoteCommand in emotes)
+        foreach (var emote in sheet)
         {
-            AddCommand(emoteCommand.TextCommand.ValueNullable?.Command.ExtractText());
-            AddCommand(emoteCommand.TextCommand.ValueNullable?.ShortCommand.ExtractText());
-            AddCommand(emoteCommand.TextCommand.ValueNullable?.Alias.ExtractText());
-            AddCommand(emoteCommand.TextCommand.ValueNullable?.ShortAlias.ExtractText());
+            AddCommand(emote.TextCommand.ValueNullable?.Command.ExtractText());
+            AddCommand(emote.TextCommand.ValueNullable?.ShortCommand.ExtractText());
+            AddCommand(emote.TextCommand.ValueNullable?.Alias.ExtractText());
+            AddCommand(emote.TextCommand.ValueNullable?.ShortAlias.ExtractText());
         }
 
-        if (Emotes.Count == 0)
-            Service.ChatGui.PrintError($"[PuppetMaster][Error] Failed to build Emotes list");
+        if (emotes.Count == 0)
+            chatGui.PrintError($"[PuppetMaster][Error] Failed to build Emotes list");
     }
 
-    public static bool IsEmote(string command) => Emotes.Contains(command);
+    public bool IsEmote(string command) => emotes.Contains(command);
 
-    private static void AddCommand(string? command)
+    private void AddCommand(string? command)
     {
-        if (!string.IsNullOrEmpty(command)) Emotes.Add(command);
+        if (!string.IsNullOrEmpty(command)) emotes.Add(command);
     }
 }

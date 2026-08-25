@@ -1,5 +1,5 @@
 using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
 using System.Threading.Tasks;
@@ -9,35 +9,37 @@ using ECommons.Automation;
 
 namespace PuppetMaster;
 
-public static class ChatHandler
+internal class ChatHandler(ReactionService reactions, EmoteRegistry emotes, IChatGui chatGui)
 {
-    private static Regex MyRegex = new ("\r\n|\r|\n");
+    private static readonly Regex NewLine = new("\r\n|\r|\n");
 
-    public static void OnChatMessage(IHandleableChatMessage message)
+    public void OnChatMessage(IHandleableChatMessage message)
     {
-        if (Service.configuration!.DebugLogTypes && message.LogKind != XivChatType.Debug)
+        var configuration = reactions.Configuration;
+
+        if (configuration.DebugLogTypes && message.LogKind != XivChatType.Debug)
         {
             var prefix = int.TryParse(message.LogKind.ToString(), out var number)
                              ? "[" + number + "]"
                              : "[" + ((int)message.LogKind) + "][" + message.LogKind + "]";
             prefix += (message.Sender.ToString().IsNullOrEmpty() ? "" : "<" + message.Sender + "> ");
-            Service.ChatGui.Print(prefix + " " + message.Message);
+            chatGui.Print(prefix + " " + message.Message);
         }
 
         if (message.IsHandled) return;
 
-        for (var index = 0; index < Service.configuration.Reactions.Count; index++)
+        for (var index = 0; index < configuration.Reactions.Count; index++)
         {
-            if (Service.configuration.Reactions[index].Enabled)
+            if (configuration.Reactions[index].Enabled)
                 DoCommand(index, message.LogKind, message.Message.ToString());
         }
     }
 
-    private static async Task RunMacroAsync(string[] lines, int index)
+    private async Task RunMacroAsync(string[] lines, int index)
     {
-        Service.semaphore.WaitOne();
-        var reaction = Service.configuration!.Reactions[index];
-        Service.semaphore.Release();
+        reactions.Semaphore.WaitOne();
+        var reaction = reactions.Configuration.Reactions[index];
+        reactions.Semaphore.Release();
 
         foreach (var line in lines)
         {
@@ -45,7 +47,7 @@ public static class ChatHandler
             if (!string.IsNullOrEmpty(textCommand.Main))
             {
                 // Process emote
-                var isEmote = EmoteRegistry.IsEmote(textCommand.Main);
+                var isEmote = emotes.IsEmote(textCommand.Main);
                 if (isEmote)
                 {
                     if ((textCommand.Main == "/sit" || textCommand.Main == "/groundsit" || textCommand.Main == "/lounge") && !reaction.AllowSit)
@@ -68,7 +70,7 @@ public static class ChatHandler
 #if DEBUG
                 else
                 {
-                    Service.ChatGui.Print($"{textCommand.Main} in CommandBlacklist");
+                    chatGui.Print($"{textCommand.Main} in CommandBlacklist");
                     return;
                 }
 #endif
@@ -76,39 +78,40 @@ public static class ChatHandler
         }
     }
 
-    private static void DoCommand(int index, XivChatType type, String message)
+    private void DoCommand(int index, XivChatType type, string message)
     {
-        // Check if part of enabled channels
-        if (!Service.configuration!.Reactions[index].EnabledChannels.Contains((int)type)) return;
+        var configuration = reactions.Configuration;
 
-        var usingRegex = (Service.configuration.Reactions[index].UseRegex && Service.configuration.Reactions[index].CustomRx != null);
+        // Check if part of enabled channels
+        if (!configuration.Reactions[index].EnabledChannels.Contains((int)type)) return;
+
+        var usingRegex = (configuration.Reactions[index].UseRegex && configuration.Reactions[index].CustomRx != null);
 
         // Guard against whitespace regex
-        if ((usingRegex && Service.configuration.Reactions[index].CustomRx!.ToString().IsNullOrWhitespace()) ||
-            (!usingRegex && Service.configuration.Reactions[index].Rx!.ToString().IsNullOrWhitespace()))
+        if ((usingRegex && configuration.Reactions[index].CustomRx!.ToString().IsNullOrWhitespace()) ||
+            (!usingRegex && configuration.Reactions[index].Rx!.ToString().IsNullOrWhitespace()))
         {
 #if DEBUG
-            Service.ChatGui.PrintError($"[PuppetMaster][ERR] Empty RegEx [{message}]");
+            chatGui.PrintError($"[PuppetMaster][ERR] Empty RegEx [{message}]");
 #endif
             return;
         }
 
         // Find command in message
-        var matches = usingRegex ? 
-                          Service.configuration.Reactions[index].CustomRx!.Matches(message) :
-                          Service.configuration.Reactions[index].Rx!.Matches(message);
+        var matches = usingRegex ?
+                          configuration.Reactions[index].CustomRx!.Matches(message) :
+                          configuration.Reactions[index].Rx!.Matches(message);
         if (matches.Count == 0) return;
         var command = string.Empty;
         try
         {
             command = usingRegex ?
-                          Service.configuration.Reactions[index].CustomRx!.Replace(matches[0].Value, Service.configuration.Reactions[index].ReplaceMatch) :
-                          Service.configuration.Reactions[index].Rx!.Replace(matches[0].Value, Service.GetDefaultReplaceMatch());
+                          configuration.Reactions[index].CustomRx!.Replace(matches[0].Value, configuration.Reactions[index].ReplaceMatch) :
+                          configuration.Reactions[index].Rx!.Replace(matches[0].Value, reactions.GetDefaultReplaceMatch());
         } catch (Exception) { }
 
 
-        var lines = MyRegex.Split(command.ToString());
+        var lines = NewLine.Split(command.ToString());
         _ = RunMacroAsync(lines, index);
     }
-    
 }
