@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PuppetMaster;
@@ -17,6 +18,8 @@ public class Reaction
     public CommandFilterMode FilterMode { get; set; } = CommandFilterMode.AllowAll;
     public List<string> CommandWhitelist { get; set; } = [];
     public List<string> CommandBlacklist { get; set; } = [];
+    public SenderFilterMode SenderFilterMode { get; set; } = SenderFilterMode.AllowEveryone;
+    public List<PlayerId> AllowedSenders { get; set; } = [];
     public Regex? Rx;
     public Regex? CustomRx;
 
@@ -35,8 +38,10 @@ public class Reaction
         ReplaceMatch = ReplaceMatch,
         TestInput = TestInput,
         FilterMode = FilterMode,
+        SenderFilterMode = SenderFilterMode,
         EnabledChannels = [.. EnabledChannels],
         CommandWhitelist = [.. CommandWhitelist],
         CommandBlacklist = [.. CommandBlacklist],
+        AllowedSenders = [.. AllowedSenders.Select(p => new PlayerId { Name = p.Name, World = p.World })],
     };
 }

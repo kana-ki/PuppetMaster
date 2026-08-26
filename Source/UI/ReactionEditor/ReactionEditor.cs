@@ -11,13 +11,15 @@ internal class ReactionEditor
     private readonly ReactionService reactions;
     private readonly TriggerConfigPanel triggerPanel;
     private readonly AllowedCommandsPanel commandsPanel;
+    private readonly AllowedPlayersPanel playersPanel;
     private readonly EnabledChannelsPanel channelsPanel;
 
-    public ReactionEditor(ReactionService reactions, EmoteRegistry emotes)
+    public ReactionEditor(ReactionService reactions, EmoteRegistry emotes, WorldRegistry worlds)
     {
         this.reactions = reactions;
         triggerPanel = new TriggerConfigPanel(reactions);
         commandsPanel = new AllowedCommandsPanel(reactions, emotes);
+        playersPanel = new AllowedPlayersPanel(reactions, worlds);
         channelsPanel = new EnabledChannelsPanel(reactions);
     }
 
@@ -39,6 +41,7 @@ internal class ReactionEditor
 
         triggerPanel.Draw(index);
         commandsPanel.Draw(reaction);
+        playersPanel.Draw(reaction);
         channelsPanel.Draw(reaction);
     }
 

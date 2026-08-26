@@ -56,6 +56,8 @@ internal class ConfigurationProvider
             if (!reaction.CommandWhitelist.Contains("/sit")) reaction.CommandWhitelist.Add("/sit");
             if (!reaction.CommandWhitelist.Contains("/groundsit")) reaction.CommandWhitelist.Add("/groundsit");
         }
+        
+        reaction.SenderFilterMode = SenderFilterMode.AllowOnly;
     }
 
     private void SeedDefaults()

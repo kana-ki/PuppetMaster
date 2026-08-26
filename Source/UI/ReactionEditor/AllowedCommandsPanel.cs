@@ -9,7 +9,6 @@ namespace PuppetMaster.UI;
 internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emotes)
 {
     private const float PanelWidth = 300f;
-    private const float IconScale = 0.7f;
     private static readonly string[] FilterModes = ["Allow all", "Allow only:", "Allow all except:"];
 
     private string commandInput = string.Empty;
@@ -60,25 +59,11 @@ internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emo
 
         ImGui.BeginChild("##CommandListRegion", new Vector2(PanelWidth, 150), true);
 
-        var buttonSize = ImGui.GetFontSize() * IconScale + ImGui.GetStyle().FramePadding.Y * 2;
-        var textHeight = ImGui.GetTextLineHeight();
-        var rowHeight = buttonSize > textHeight ? buttonSize : textHeight;
         var removeAt = -1;
         for (var i = 0; i < list.Count; i++)
         {
-            var rowY = ImGui.GetCursorPosY();
-
-            ImGui.SetCursorPosY(rowY + (rowHeight - textHeight) * 0.5f);
-            ImGui.TextUnformatted(list[i]);
-
-            ImGui.SameLine();
-            ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - buttonSize);
-            ImGui.SetCursorPosY(rowY + (rowHeight - buttonSize) * 0.5f);
-
-            ImGui.SetWindowFontScale(IconScale);
-            if (ImGuiComponents.IconButton(i, FontAwesomeIcon.Times, new(20, 20)))
+            if (ImGuiExtensions.RemovableRow(i, list[i]))
                 removeAt = i;
-            ImGui.SetWindowFontScale(1f);
         }
 
         ImGui.EndChild();

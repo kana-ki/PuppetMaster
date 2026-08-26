@@ -37,10 +37,12 @@ public class Plugin : IDalamudPlugin
            .AddSingleton(this.chatGui = pluginInterface.GetRequiredService<IChatGui>())
            .AddSingleton(pluginInterface.GetRequiredService<IDataManager>())
            .AddSingleton(pluginInterface.GetRequiredService<IPluginLog>())
+           .AddSingleton(pluginInterface.GetRequiredService<IObjectTable>())
            // App services
            .AddSingleton<ConfigurationProvider>()
            .AddSingleton<ReactionService>()
            .AddSingleton<EmoteRegistry>()
+           .AddSingleton<WorldRegistry>()
            .AddSingleton<ChatHandler>()
            .AddSingleton<UI.PuppetMasterWindow>()
            .BuildServiceProvider();
@@ -59,7 +61,7 @@ public class Plugin : IDalamudPlugin
         this.pluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
         this.pluginInterface.UiBuilder.OpenMainUi += DrawConfigUI;
 
-        ECommonsMain.Init(pluginInterface, this, ECommons.Module.All);
+        ECommonsMain.Init(pluginInterface, this, ECommons.Module.DalamudReflector);
     }
 
     public void Dispose()

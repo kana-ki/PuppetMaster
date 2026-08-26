@@ -13,10 +13,10 @@ internal class PuppetMasterWindow : Window, IDisposable
     private readonly ReactionListPanel listPanel;
     private readonly ReactionEditor editor;
 
-    public PuppetMasterWindow(ReactionService reactions, EmoteRegistry emotes) : base(Name)
+    public PuppetMasterWindow(ReactionService reactions, EmoteRegistry emotes, WorldRegistry worlds) : base(Name)
     {
         this.reactions = reactions;
-        editor = new ReactionEditor(reactions, emotes);
+        editor = new ReactionEditor(reactions, emotes, worlds);
         listPanel = new ReactionListPanel(reactions, Select);
 
         Size = new Vector2(720, 520);
