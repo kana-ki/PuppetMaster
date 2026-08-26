@@ -1,6 +1,6 @@
 [
   {
-    "Author": "DodingDaga, Kana Ki",
+    "Author": "Kana Ki (originally DodingDaga)",
     "Name": "Puppet Master",
     "InternalName": "puppetmaster",
     "AssemblyVersion": "9.0.0.0",
@@ -16,7 +16,7 @@
     "IsHide": false,
     "IsTestingExclusive": false,
     "DownloadLinkInstall": "https://github.com/kana-ki/PuppetMaster/releases/download/v9.0.0/latest.zip",
-    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v9.0.0/latest.zip",
+    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v10.0.0/latest.zip",
     "DownloadLinkUpdate": "https://github.com/kana-ki/PuppetMaster/releases/download/v9.0.0/latest.zip"
   }
 ]
