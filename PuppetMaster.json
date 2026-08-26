@@ -13,6 +13,7 @@
       "emote", "plugin", "puppet", "master", "control", "dom", "sub"
     ],
     "DalamudApiLevel": 15,
+    "TestingDalamudApiLevel": 15,
     "LoadPriority": 0,
     "IsHide": false,
     "IsTestingExclusive": false,
