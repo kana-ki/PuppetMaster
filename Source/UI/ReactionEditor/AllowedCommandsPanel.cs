@@ -77,7 +77,7 @@ internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emo
         ImGui.SetNextItemWidth(PanelWidth - ImGui.GetFrameHeight() - ImGui.GetStyle().ItemSpacing.X);
         ImGui.InputText("##CommandInput", ref commandInput, 100);
         ImGui.SameLine();
-        if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
+        if (ImGuiComponents.IconButton("##AddCommand", FontAwesomeIcon.Plus))
             AddCommand(list, commandInput);
     }
 

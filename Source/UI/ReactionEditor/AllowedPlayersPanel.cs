@@ -57,7 +57,7 @@ internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worl
         DrawWorldCombo();
 
         ImGui.SameLine();
-        if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
+        if (ImGuiComponents.IconButton("##AddPlayer", FontAwesomeIcon.Plus))
             AddSender(reaction);
     }
 
@@ -92,5 +92,7 @@ internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worl
 
         reactions.Configuration.Save();
         nameInput = string.Empty;
+        worldInput = string.Empty;
+        worldFilter = string.Empty;
     }
 }
