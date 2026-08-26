@@ -2,5 +2,5 @@ namespace PuppetMaster;
 
 public class ConfigVersion
 {
-    public const int CURRENT = 1;
+    public const int CURRENT = 2;
 }

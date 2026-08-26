@@ -26,7 +26,7 @@ public class Plugin : IDalamudPlugin
 
     private readonly ReactionService reactions;
     private readonly ChatHandler chatHandler;
-    private readonly ConfigWindow configWindow;
+    private readonly UI.ConfigWindow configWindow;
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
@@ -42,12 +42,12 @@ public class Plugin : IDalamudPlugin
            .AddSingleton<ReactionService>()
            .AddSingleton<EmoteRegistry>()
            .AddSingleton<ChatHandler>()
-           .AddSingleton<ConfigWindow>()
+           .AddSingleton<UI.ConfigWindow>()
            .BuildServiceProvider();
 
         reactions = provider.GetRequiredService<ReactionService>();
         chatHandler = provider.GetRequiredService<ChatHandler>();
-        configWindow = provider.GetRequiredService<ConfigWindow>();
+        configWindow = provider.GetRequiredService<UI.ConfigWindow>();
 
         windowSystem.AddWindow(configWindow);
 

@@ -33,6 +33,13 @@ internal class EmoteRegistry
 
     public bool IsEmote(string command) => emotes.Contains(command);
 
+    public void AddAllTo(List<string> list)
+    {
+        foreach (var emote in emotes)
+            if (!list.Contains(emote))
+                list.Add(emote);
+    }
+
     private void AddCommand(string? command)
     {
         if (!string.IsNullOrEmpty(command)) emotes.Add(command);

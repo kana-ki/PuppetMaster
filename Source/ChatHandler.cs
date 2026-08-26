@@ -37,46 +37,32 @@ internal class ChatHandler(ReactionService reactions, EmoteRegistry emotes, ICha
 
     private async Task RunMacroAsync(string[] lines, int index)
     {
-        reactions.Semaphore.WaitOne();
         var reaction = reactions.Configuration.Reactions[index];
-        reactions.Semaphore.Release();
 
         foreach (var line in lines)
         {
             var textCommand = new TextCommand(line);
-            if (!string.IsNullOrEmpty(textCommand.Main))
-            {
-                // Process emote
-                var isEmote = emotes.IsEmote(textCommand.Main);
-                if (isEmote)
-                {
-                    if ((textCommand.Main == "/sit" || textCommand.Main == "/groundsit" || textCommand.Main == "/lounge") && !reaction.AllowSit)
-                        textCommand.Main = "/no";
-                    if (reaction.MotionOnly)
-                        textCommand.Args = "motion";
-                }
+            if (string.IsNullOrEmpty(textCommand.Main)) continue;
 
-                if (!reaction.CommandBlacklist.Contains(textCommand.Main))
-                {
-                    // Execute command
-                    if (reaction.AllowAllCommands || isEmote || reaction.CommandWhitelist.Contains(textCommand.Main))
-                    {
-                        if (textCommand.Main == "/wait" && float.TryParse(textCommand.Args, out var seconds))
-                            await Task.Delay((int)(Math.Clamp(seconds, 0.0, 60.0) * 1000.0));
-                        else
-                            Chat.SendMessage($"{textCommand}");
-                    }
-                }
-#if DEBUG
-                else
-                {
-                    chatGui.Print($"{textCommand.Main} in CommandBlacklist");
-                    return;
-                }
-#endif
-            }
+            if (reaction.MotionOnly && emotes.IsEmote(textCommand.Main))
+                textCommand.Args = "motion";
+
+            if (!IsCommandAllowed(reaction, textCommand.Main)) continue;
+
+            if (textCommand.Main == "/wait" && float.TryParse(textCommand.Args, out var seconds))
+                await Task.Delay((int)(Math.Clamp(seconds, 0.0, 60.0) * 1000.0));
+            else
+                Chat.SendMessage($"{textCommand}");
         }
     }
+
+    private static bool IsCommandAllowed(Reaction reaction, string command) => reaction.FilterMode switch
+    {
+        CommandFilterMode.AllowAll => true,
+        CommandFilterMode.AllowOnly => reaction.CommandWhitelist.Contains(command),
+        CommandFilterMode.AllowAllExcept => !reaction.CommandBlacklist.Contains(command),
+        _ => false,
+    };
 
     private void DoCommand(int index, XivChatType type, string message)
     {

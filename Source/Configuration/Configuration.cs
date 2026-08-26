@@ -11,7 +11,6 @@ public class Configuration : IPluginConfiguration
     public int Version { get; set; } = ConfigVersion.CURRENT;
 
     public List<ChannelSetting> EnabledChannels { get; set; } = [];
-    public List<ChannelSetting> CustomChannels { get; set; } = [];
     public List<Reaction> Reactions { get; set; } = [];
     public int CurrentReactionEdit = -1;
     public bool DebugLogTypes { get; set; } = false;

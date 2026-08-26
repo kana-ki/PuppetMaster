@@ -7,17 +7,56 @@ internal class ConfigurationProvider
 {
     private const uint CHANNEL_COUNT = 23;
 
+    private readonly EmoteRegistry emotes;
+
     public Configuration Configuration { get; }
 
-    public ConfigurationProvider(IDalamudPluginInterface pluginInterface)
+    public ConfigurationProvider(IDalamudPluginInterface pluginInterface, EmoteRegistry emotes)
     {
+        this.emotes = emotes;
         Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(pluginInterface);
+        Migrate();
         SeedDefaults();
         Configuration.Save();
     }
 
     public void Save() => Configuration.Save();
+
+    public Reaction NewReaction(string name = "Reaction")
+    {
+        var reaction = new Reaction { Name = name, FilterMode = CommandFilterMode.AllowOnly };
+        emotes.AddAllTo(reaction.CommandWhitelist);
+        return reaction;
+    }
+
+    private void Migrate()
+    {
+        if (Configuration.Version < 2)
+        {
+            foreach (var reaction in Configuration.Reactions)
+                MigrateCommandFilter(reaction);
+            Configuration.Version = 2;
+        }
+    }
+
+    private void MigrateCommandFilter(Reaction reaction)
+    {
+        if (reaction.AllowAllCommands)
+        {
+            reaction.FilterMode = CommandFilterMode.AllowAll;
+            return;
+        }
+
+        reaction.FilterMode = CommandFilterMode.AllowOnly;
+        emotes.AddAllTo(reaction.CommandWhitelist);
+
+        if (reaction.AllowSit)
+        {
+            if (!reaction.CommandWhitelist.Contains("/sit")) reaction.CommandWhitelist.Add("/sit");
+            if (!reaction.CommandWhitelist.Contains("/groundsit")) reaction.CommandWhitelist.Add("/groundsit");
+        }
+    }
 
     private void SeedDefaults()
     {
@@ -52,10 +91,7 @@ internal class ConfigurationProvider
         }
 
         if (Configuration.Reactions.Count == 0)
-            Configuration.Reactions.Add(new Reaction() { Name = "Reaction" });
-
-        if (Configuration.CustomChannels.Count == 0)
-            Configuration.CustomChannels.Add(new ChannelSetting() { Name = "SystemMessage", ChatType = 57 });
+            Configuration.Reactions.Add(NewReaction());
 
         Configuration.DebugLogTypes = false;
     }

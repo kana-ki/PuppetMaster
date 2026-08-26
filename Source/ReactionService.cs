@@ -2,7 +2,6 @@ using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace PuppetMaster;
 
@@ -12,7 +11,6 @@ internal class ReactionService
     private readonly IChatGui chatGui;
 
     public Configuration Configuration => configurationProvider.Configuration;
-    public Semaphore Semaphore { get; } = new(initialCount: 1, maximumCount: 1);
 
     public ReactionService(ConfigurationProvider configurationProvider, IChatGui chatGui)
     {
@@ -20,6 +18,8 @@ internal class ReactionService
         this.chatGui = chatGui;
         InitializeRegex();
     }
+
+    public Reaction NewReaction() => configurationProvider.NewReaction();
 
     public void SetEnabledAll(bool enabled = true)
     {
