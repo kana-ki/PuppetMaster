@@ -4,6 +4,7 @@
     "Name": "Puppet Master",
     "InternalName": "puppetmaster",
     "AssemblyVersion": "9.0.0.0",
+    "TestingAssemblyVersion": "10.0.0.0",
     "Description": "Allows others to control you via the game's text commands",
     "Punchline": "Let others tell you what to do.",
     "ApplicableVersion": "any",
