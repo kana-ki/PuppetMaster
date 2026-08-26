@@ -6,19 +6,26 @@ using Dalamud.Interface.Components;
 
 namespace PuppetMaster.UI;
 
-internal partial class ConfigWindow
+internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emotes)
 {
-    private const float CommandPanelWidth = 300f;
+    private const float PanelWidth = 300f;
+    private const float IconScale = 0.7f;
     private static readonly string[] FilterModes = ["Allow all", "Allow only:", "Allow all except:"];
-    private static readonly Vector4 LinkColor = new(0.26f, 0.59f, 0.98f, 1f);
 
-    private void DrawCommandFilter(Reaction reaction)
+    private string commandInput = string.Empty;
+
+    public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        if (!ImGui.CollapsingHeader("Commands", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("Allowed commands", ImGuiTreeNodeFlags.DefaultOpen))
             return;
-
-        ImGui.Indent(20);
+        
+        var motionOnly = reaction.MotionOnly;
+        if (ImGui.Checkbox("Motion only", ref motionOnly))
+        {
+            reaction.MotionOnly = motionOnly;
+            reactions.Configuration.Save();
+        }
 
         ImGui.SetNextItemWidth(200);
         var mode = (int)reaction.FilterMode;
@@ -32,39 +39,46 @@ internal partial class ConfigWindow
             DrawCommandList(reaction.CommandWhitelist);
         else if (reaction.FilterMode == CommandFilterMode.AllowAllExcept)
             DrawCommandList(reaction.CommandBlacklist);
-
-        ImGui.Unindent(20);
     }
 
     private void DrawCommandList(List<string> list)
     {
         var leftX = ImGui.GetCursorPosX();
 
-        if (DrawLink("Add all emotes"))
+        if (ImGuiExtensions.Link("Add all emotes"))
         {
             emotes.AddAllTo(list);
             reactions.Configuration.Save();
         }
 
-        ImGui.SameLine(leftX + CommandPanelWidth - ImGui.CalcTextSize("Clear").X);
-        if (DrawLink("Clear"))
+        ImGui.SameLine(leftX + PanelWidth - ImGui.CalcTextSize("Clear").X);
+        if (ImGuiExtensions.Link("Clear"))
         {
             list.Clear();
             reactions.Configuration.Save();
         }
 
-        ImGui.BeginChild("##CommandListRegion", new Vector2(CommandPanelWidth, 150), true);
+        ImGui.BeginChild("##CommandListRegion", new Vector2(PanelWidth, 150), true);
 
-        var buttonWidth = ImGui.GetFrameHeight();
+        var buttonSize = ImGui.GetFontSize() * IconScale + ImGui.GetStyle().FramePadding.Y * 2;
+        var textHeight = ImGui.GetTextLineHeight();
+        var rowHeight = buttonSize > textHeight ? buttonSize : textHeight;
         var removeAt = -1;
         for (var i = 0; i < list.Count; i++)
         {
-            ImGui.AlignTextToFramePadding();
+            var rowY = ImGui.GetCursorPosY();
+
+            ImGui.SetCursorPosY(rowY + (rowHeight - textHeight) * 0.5f);
             ImGui.TextUnformatted(list[i]);
+
             ImGui.SameLine();
-            ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - buttonWidth);
-            if (ImGuiComponents.IconButton(i, FontAwesomeIcon.Times))
+            ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - buttonSize);
+            ImGui.SetCursorPosY(rowY + (rowHeight - buttonSize) * 0.5f);
+
+            ImGui.SetWindowFontScale(IconScale);
+            if (ImGuiComponents.IconButton(i, FontAwesomeIcon.Times, new(20, 20)))
                 removeAt = i;
+            ImGui.SetWindowFontScale(1f);
         }
 
         ImGui.EndChild();
@@ -75,7 +89,7 @@ internal partial class ConfigWindow
             reactions.Configuration.Save();
         }
 
-        ImGui.SetNextItemWidth(CommandPanelWidth - buttonWidth - ImGui.GetStyle().ItemSpacing.X);
+        ImGui.SetNextItemWidth(PanelWidth - ImGui.GetFrameHeight() - ImGui.GetStyle().ItemSpacing.X);
         ImGui.InputText("##CommandInput", ref commandInput, 100);
         ImGui.SameLine();
         if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus))
@@ -91,23 +105,6 @@ internal partial class ConfigWindow
         reactions.Configuration.Save();
 
         commandInput = string.Empty;
-    }
-
-    private static bool DrawLink(string label)
-    {
-        ImGui.TextColored(LinkColor, label);
-        var clicked = ImGui.IsItemClicked();
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-            var min = ImGui.GetItemRectMin();
-            var max = ImGui.GetItemRectMax();
-            ImGui.GetWindowDrawList()
-                 .AddLine(new Vector2(min.X, max.Y), new Vector2(max.X, max.Y), ImGui.GetColorU32(LinkColor));
-        }
-
-        return clicked;
     }
 
     private static string NormalizeCommand(string input)

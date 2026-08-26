@@ -2,9 +2,9 @@ using Dalamud.Bindings.ImGui;
 
 namespace PuppetMaster.UI;
 
-internal partial class ConfigWindow
+internal class SelectReactionTab(ReactionService reactions)
 {
-    private void DrawReactionsTab()
+    public void Draw()
     {
         if (ImGui.Button($"Add##ReactionAddButton"))
         {
