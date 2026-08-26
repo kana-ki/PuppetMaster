@@ -23,4 +23,20 @@ public class Reaction
     //---- Deprecated, migrated to FilterMode and CommandWhitelist
     public bool AllowSit { get; set; } = false;
     public bool AllowAllCommands { get; set; } = false;
+
+    public Reaction Clone() => new()
+    {
+        Enabled = Enabled,
+        Name = Name,
+        TriggerPhrase = TriggerPhrase,
+        MotionOnly = MotionOnly,
+        UseRegex = UseRegex,
+        CustomPhrase = CustomPhrase,
+        ReplaceMatch = ReplaceMatch,
+        TestInput = TestInput,
+        FilterMode = FilterMode,
+        EnabledChannels = [.. EnabledChannels],
+        CommandWhitelist = [.. CommandWhitelist],
+        CommandBlacklist = [.. CommandBlacklist],
+    };
 }

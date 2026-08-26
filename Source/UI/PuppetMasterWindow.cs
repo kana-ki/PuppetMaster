@@ -9,13 +9,18 @@ internal class PuppetMasterWindow : Window, IDisposable
 {
     public const string Name = "PuppetMaster";
 
-    private readonly SelectReactionTab selectTab;
-    private readonly EditReactionTab editTab;
+    private readonly ReactionService reactions;
+    private readonly ReactionListPanel listPanel;
+    private readonly ReactionEditor editor;
 
     public PuppetMasterWindow(ReactionService reactions, EmoteRegistry emotes) : base(Name)
     {
-        selectTab = new SelectReactionTab(reactions);
-        editTab = new EditReactionTab(reactions, emotes);
+        this.reactions = reactions;
+        editor = new ReactionEditor(reactions, emotes);
+        listPanel = new ReactionListPanel(reactions, Select);
+
+        Size = new Vector2(720, 520);
+        SizeCondition = ImGuiCond.FirstUseEver;
     }
 
     public void Dispose()
@@ -23,26 +28,40 @@ internal class PuppetMasterWindow : Window, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public void PreloadTestResult() => editTab.PreloadTestResult();
+    public void PreloadTestResult() => editor.Reload();
+
+    public override void PreDraw()
+    {
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(560, 320),
+            MaximumSize = new Vector2(float.MaxValue, float.MaxValue),
+        };
+    }
 
     public override void Draw()
     {
-        ImGui.SetNextWindowSize(new Vector2(480, 640), ImGuiCond.FirstUseEver);
+        var scale = ImGui.GetIO().FontGlobalScale;
 
-        ImGui.BeginTabBar("PuppetMaster Config Tabs");
+        ImGui.BeginChild("###ReactionList", new Vector2(200 * scale, 0), true);
+        listPanel.Draw();
+        ImGui.EndChild();
 
-        if (ImGui.BeginTabItem("Reactions"))
-        {
-            selectTab.Draw();
-            ImGui.EndTabItem();
-        }
+        ImGui.SameLine();
 
-        if (ImGui.BeginTabItem("Edit Reactions"))
-        {
-            editTab.Draw();
-            ImGui.EndTabItem();
-        }
+        ImGui.BeginChild("###ReactionEditor", new Vector2(0, 0), true);
+        editor.Draw();
+        ImGui.EndChild();
+    }
 
-        ImGui.EndTabBar();
+    private void Select(int index)
+    {
+        reactions.Configuration.CurrentReactionEdit = index;
+        reactions.Configuration.Save();
+
+        if (reactions.IsValidReactionIndex(index))
+            reactions.InitializeRegex(index);
+
+        editor.Reload();
     }
 }
