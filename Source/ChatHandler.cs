@@ -74,7 +74,7 @@ internal class ChatHandler(ReactionService reactions, EmoteRegistry emotes, ICha
             var textCommand = new TextCommand(line);
             if (string.IsNullOrEmpty(textCommand.Main)) continue;
 
-            if (reaction.MotionOnly && emotes.IsEmote(textCommand.Main))
+            if (reaction.MotionOnly && emotes.IsMotionable(textCommand.Main))
                 textCommand.Args = "motion";
 
             if (!IsCommandAllowed(reaction, textCommand.Main)) continue;

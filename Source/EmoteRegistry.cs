@@ -1,3 +1,4 @@
+using System;
 using Dalamud.Plugin.Services;
 using Lumina.Excel.Sheets;
 
@@ -9,6 +10,7 @@ internal class EmoteRegistry
 {
     private readonly IPluginLog logger;
     private readonly HashSet<string> emotes = [];
+    private static readonly string[] MotionlessEmotes = ["/cpose"];
 
     public EmoteRegistry(IDataManager dataManager, IPluginLog logger)
     {
@@ -32,6 +34,7 @@ internal class EmoteRegistry
     }
 
     public bool IsEmote(string command) => emotes.Contains(command);
+    public bool IsMotionable(string command) => emotes.Contains(command) && !MotionlessEmotes.Contains(command);
 
     public void AddAllTo(List<string> list)
     {
