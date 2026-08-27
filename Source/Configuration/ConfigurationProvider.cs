@@ -35,12 +35,12 @@ internal class ConfigurationProvider
         if (Configuration.Version < 2)
         {
             foreach (var reaction in Configuration.Reactions)
-                MigrateCommandFilter(reaction);
+                MigrationReactionTo2(reaction);
             Configuration.Version = 2;
         }
     }
 
-    private void MigrateCommandFilter(Reaction reaction)
+    private void MigrationReactionTo2(Reaction reaction)
     {
         if (reaction.AllowAllCommands)
         {
@@ -48,11 +48,10 @@ internal class ConfigurationProvider
             return;
         }
 
+        reaction.Rx = null;
         reaction.ReplaceBrackets = true;
         reaction.FilterMode = CommandFilterMode.AllowOnly;
         emotes.AddAllTo(reaction.CommandWhitelist);
-
-        reaction.Rx = null;
         
         if (reaction.AllowSit)
         {
