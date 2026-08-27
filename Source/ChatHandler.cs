@@ -1,11 +1,7 @@
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Plugin.Services;
-using Dalamud.Utility;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using Dalamud.Game.Chat;
 using ECommons.Automation;
 using ECommons.GameHelpers;
@@ -21,12 +17,14 @@ internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes
 
         var sender = ResolveSender(message.Sender);
         foreach (var reaction in configuration.Reactions)
-            if (reaction.Enabled)
+        {
+            var command = CheckAndPrepareCommand(reaction, message.LogKind, message.Message.ToString(), sender);
+            if (command is not null)
             {
-                var command = CheckAndPrepareCommand(reaction, message.LogKind, message.Message.ToString(), sender);
-                if (command is not null)
-                    Chat.SendMessage($"{command}");
+                Chat.SendMessage($"{command}");
+                break;
             }
+        }
     }
 
     private PlayerId ResolveSender(SeString sender)
@@ -63,6 +61,9 @@ internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes
 
     private TextCommand? CheckAndPrepareCommand(Reaction reaction, XivChatType type, string message, PlayerId sender)
     {
+        if (!reaction.Enabled) 
+            return null;
+        
         if (!reaction.EnabledChannels.Contains((int)type))
             return null;
 
