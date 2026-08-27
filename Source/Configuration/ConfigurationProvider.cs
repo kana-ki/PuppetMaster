@@ -48,9 +48,12 @@ internal class ConfigurationProvider
             return;
         }
 
+        reaction.ReplaceBrackets = true;
         reaction.FilterMode = CommandFilterMode.AllowOnly;
         emotes.AddAllTo(reaction.CommandWhitelist);
 
+        reaction.Rx = null;
+        
         if (reaction.AllowSit)
         {
             if (!reaction.CommandWhitelist.Contains("/sit")) reaction.CommandWhitelist.Add("/sit");

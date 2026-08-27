@@ -44,6 +44,7 @@ public class Plugin : IDalamudPlugin
            .AddSingleton<EmoteRegistry>()
            .AddSingleton<WorldRegistry>()
            .AddSingleton<ChatHandler>()
+           .AddSingleton<CommandParser>()
            .AddSingleton<UI.PuppetMasterWindow>()
            .BuildServiceProvider();
 
@@ -104,6 +105,5 @@ public class Plugin : IDalamudPlugin
     private void DrawConfigUI()
     {
         configWindow.IsOpen = true;
-        configWindow.PreloadTestResult();
     }
 }

@@ -9,26 +9,19 @@ internal class PuppetMasterWindow : Window, IDisposable
 {
     public const string Name = "PuppetMaster";
 
-    private readonly ReactionService reactions;
-    private readonly ReactionListPanel listPanel;
-    private readonly ReactionEditor editor;
+    private readonly ReactionService _reactionService;
+    private readonly ReactionListPanel _listPanel;
+    private readonly ReactionEditor _editorPanel;
 
-    public PuppetMasterWindow(ReactionService reactions, EmoteRegistry emotes, WorldRegistry worlds) : base(Name)
+    public PuppetMasterWindow(ReactionService reactionService, EmoteRegistry emotes, WorldRegistry worlds) : base(Name)
     {
-        this.reactions = reactions;
-        editor = new ReactionEditor(reactions, emotes, worlds);
-        listPanel = new ReactionListPanel(reactions, Select);
+        this._reactionService = reactionService;
+        this._editorPanel = new ReactionEditor(reactionService, emotes, worlds);
+        this._listPanel = new ReactionListPanel(reactionService, OnReactionSelected);
 
         Size = new Vector2(720, 520);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-
-    public void PreloadTestResult() => editor.Reload();
 
     public override void PreDraw()
     {
@@ -44,24 +37,23 @@ internal class PuppetMasterWindow : Window, IDisposable
         var scale = ImGui.GetIO().FontGlobalScale;
 
         ImGui.BeginChild("###ReactionList", new Vector2(200 * scale, 0), true);
-        listPanel.Draw();
+        _listPanel.Draw();
         ImGui.EndChild();
 
         ImGui.SameLine();
 
         ImGui.BeginChild("###ReactionEditor", new Vector2(0, 0), true);
-        editor.Draw();
+        _editorPanel.Draw();
         ImGui.EndChild();
     }
 
-    private void Select(int index)
+    private void OnReactionSelected(Reaction? reaction)
     {
-        reactions.Configuration.CurrentReactionEdit = index;
-        reactions.Configuration.Save();
-
-        if (reactions.IsValidReactionIndex(index))
-            reactions.InitializeRegex(index);
-
-        editor.Reload();
+        if (reaction is not null)
+            _reactionService.InitializeRegex(reaction);
+        _editorPanel.Load(reaction);
     }
+
+    public void Dispose() =>
+        GC.SuppressFinalize(this);
 }

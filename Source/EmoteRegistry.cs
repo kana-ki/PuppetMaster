@@ -1,7 +1,6 @@
 using System;
 using Dalamud.Plugin.Services;
 using Lumina.Excel.Sheets;
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +23,6 @@ internal class EmoteRegistry
         var sheet = dataManager.GetExcelSheet<Emote>();
         foreach (var emote in sheet)
         {
-            logger.Debug($"Registering emote {emote}");
             AddCommand(emote.TextCommand.ValueNullable?.Command.ExtractText());
             AddCommand(emote.TextCommand.ValueNullable?.ShortCommand.ExtractText());
             AddCommand(emote.TextCommand.ValueNullable?.Alias.ExtractText());
@@ -48,6 +46,10 @@ internal class EmoteRegistry
 
     private void AddCommand(string? command)
     {
-        if (!string.IsNullOrEmpty(command)) emotes.Add(command);
+        if (!string.IsNullOrEmpty(command))
+        {
+            logger.Debug($"Registering emote {command}");
+            emotes.Add(command);
+        }
     }
 }

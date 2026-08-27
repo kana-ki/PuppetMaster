@@ -2,12 +2,12 @@ using Dalamud.Bindings.ImGui;
 
 namespace PuppetMaster.UI;
 
-internal class EnabledChannelsPanel(ReactionService reactions)
+internal class AllowedChannelsPanel(ReactionService reactions)
 {
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        if (!ImGui.CollapsingHeader("Enabled Channels", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("Allowed channels", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
         for (var channelIndex = 16; channelIndex < 23; ++channelIndex)

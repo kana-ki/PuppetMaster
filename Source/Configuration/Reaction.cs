@@ -12,9 +12,9 @@ public class Reaction
     public bool MotionOnly { get; set; } = true;
     public bool UseRegex { get; set; } = false;
     public string CustomPhrase { get; set; } = string.Empty;
-    public string ReplaceMatch { get; set; } = string.Empty;
     public string TestInput { get; set; } = string.Empty;
     public List<int> EnabledChannels { get; set; } = [];
+    public bool ReplaceBrackets { get; set; } = true;
     public CommandFilterMode FilterMode { get; set; } = CommandFilterMode.AllowAll;
     public List<string> CommandWhitelist { get; set; } = [];
     public List<string> CommandBlacklist { get; set; } = [];
@@ -35,9 +35,9 @@ public class Reaction
         MotionOnly = MotionOnly,
         UseRegex = UseRegex,
         CustomPhrase = CustomPhrase,
-        ReplaceMatch = ReplaceMatch,
         TestInput = TestInput,
         FilterMode = FilterMode,
+        ReplaceBrackets = ReplaceBrackets,
         SenderFilterMode = SenderFilterMode,
         EnabledChannels = [.. EnabledChannels],
         CommandWhitelist = [.. CommandWhitelist],

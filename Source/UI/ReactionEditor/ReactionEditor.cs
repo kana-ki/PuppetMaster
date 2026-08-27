@@ -3,46 +3,41 @@ using Dalamud.Bindings.ImGui;
 
 namespace PuppetMaster.UI;
 
-internal class ReactionEditor
+internal class ReactionEditor(ReactionService reactionService, EmoteRegistry emotes, WorldRegistry worlds)
 {
     private static readonly Vector4 EnabledColor = new(0.24f, 0.52f, 0.24f, 1f);
     private static readonly Vector4 DisabledColor = new(0.55f, 0.24f, 0.24f, 1f);
 
-    private readonly ReactionService reactions;
-    private readonly TriggerConfigPanel triggerPanel;
-    private readonly AllowedCommandsPanel commandsPanel;
-    private readonly AllowedPlayersPanel playersPanel;
-    private readonly EnabledChannelsPanel channelsPanel;
+    private readonly TriggerConfigPanel _triggerPanel = new(reactionService);
+    private readonly ParsingConfigPanel _parsingPanel = new(reactionService);
+    private readonly AllowedCommandsPanel _commandsPanel = new(reactionService, emotes);
+    private readonly AllowedPlayersPanel _playersPanel = new(reactionService, worlds);
+    private readonly AllowedChannelsPanel _channelsPanel = new(reactionService);
 
-    public ReactionEditor(ReactionService reactions, EmoteRegistry emotes, WorldRegistry worlds)
+    private Reaction? _reaction;
+
+    public void Load(Reaction? reaction)
     {
-        this.reactions = reactions;
-        triggerPanel = new TriggerConfigPanel(reactions);
-        commandsPanel = new AllowedCommandsPanel(reactions, emotes);
-        playersPanel = new AllowedPlayersPanel(reactions, worlds);
-        channelsPanel = new EnabledChannelsPanel(reactions);
+        this._reaction = reaction;
+        _triggerPanel.Reload(reaction);
     }
-
-    public void Reload() => triggerPanel.Reload(reactions.Configuration.CurrentReactionEdit);
 
     public void Draw()
     {
-        var index = reactions.Configuration.CurrentReactionEdit;
-        if (!reactions.IsValidReactionIndex(index))
+        if (this._reaction is null)
         {
             DrawEmptyState();
             return;
         }
 
-        var reaction = reactions.Configuration.Reactions[index];
-
-        DrawHeader(reaction);
+        DrawHeader(this._reaction);
         ImGui.Separator();
 
-        triggerPanel.Draw(index);
-        commandsPanel.Draw(reaction);
-        playersPanel.Draw(reaction);
-        channelsPanel.Draw(reaction);
+        _triggerPanel.Draw(this._reaction);
+        _parsingPanel.Draw(this._reaction);
+        _commandsPanel.Draw(this._reaction);
+        _playersPanel.Draw(this._reaction);
+        _channelsPanel.Draw(this._reaction);
     }
 
     private void DrawHeader(Reaction reaction)
@@ -54,7 +49,7 @@ internal class ReactionEditor
         if (ImGui.Button($"{(reaction.Enabled ? "Enabled" : "Disabled")}###EnableToggle", new Vector2(90, 0)))
         {
             reaction.Enabled = !reaction.Enabled;
-            reactions.Configuration.Save();
+            reactionService.Configuration.Save();
         }
 
         ImGui.PopStyleColor(3);
@@ -65,7 +60,7 @@ internal class ReactionEditor
         if (ImGui.InputTextWithHint("###ReactionName", "Reaction name", ref name, 100))
         {
             reaction.Name = name;
-            reactions.Configuration.Save();
+            reactionService.Configuration.Save();
         }
     }
 

@@ -6,15 +6,16 @@ using Dalamud.Interface.Components;
 
 namespace PuppetMaster.UI;
 
-internal class ReactionListFooter(ReactionService reactions, Action<int> onSelect)
+internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> onSelect)
 {
     private const int ButtonCount = 3;
+    private Reaction? _selectedReaction;
 
     public void Draw()
     {
         var available = ImGui.GetContentRegionAvail();
         var buttonSize = new Vector2(MathF.Floor(available.X / ButtonCount), available.Y);
-        var hasSelection = reactions.IsValidReactionIndex(reactions.Configuration.CurrentReactionEdit);
+        var hasSelection = _selectedReaction is not null;
         var canDelete = ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl;
 
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
@@ -35,27 +36,38 @@ internal class ReactionListFooter(ReactionService reactions, Action<int> onSelec
         ImGui.PopStyleVar();
     }
 
+    public void Load(Reaction reaction)
+    {
+        _selectedReaction = reaction;
+    }
+
     private void AddReaction()
     {
+        var newReaction = reactions.NewReaction();
         reactions.Configuration.Reactions.Add(reactions.NewReaction());
         reactions.Configuration.Save();
-        onSelect(reactions.Configuration.Reactions.Count - 1);
+        onSelect(newReaction);
     }
 
     private void DuplicateReaction()
     {
-        var clone = reactions.Configuration.Reactions[reactions.Configuration.CurrentReactionEdit].Clone();
+        if (this._selectedReaction is null)
+            return; 
+        
+        var clone = this._selectedReaction.Clone();
         reactions.Configuration.Reactions.Add(clone);
         reactions.Configuration.Save();
-        onSelect(reactions.Configuration.Reactions.Count - 1);
+        onSelect(clone);
     }
 
     private void DeleteReaction()
     {
-        var index = reactions.Configuration.CurrentReactionEdit;
-        reactions.Configuration.Reactions.RemoveAt(index);
+        if (this._selectedReaction is null)
+            return; 
+
+        reactions.Configuration.Reactions.Remove(this._selectedReaction);
         reactions.Configuration.Save();
-        onSelect(Math.Min(index, reactions.Configuration.Reactions.Count - 1));
+        onSelect(null);
     }
 
     private static bool DrawIconButton(FontAwesomeIcon icon, Vector2 size, string tooltip, bool disabled = false)

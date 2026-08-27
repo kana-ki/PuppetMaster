@@ -2,7 +2,7 @@ using System;
 
 namespace PuppetMaster;
 
-public struct TextCommand
+public class TextCommand
 {
     public string Main = string.Empty;
     public string Args = string.Empty;
@@ -16,7 +16,6 @@ public struct TextCommand
         command = command.Trim();
         if (command.StartsWith('/'))
         {
-            command = command.Replace('[', '<').Replace(']', '>');
             var space = command.IndexOf(' ');
             Main = (space == -1 ? command : command[..space]).ToLower();
             Args = (space == -1 ? string.Empty : command[(space + 1)..]);
@@ -27,7 +26,7 @@ public struct TextCommand
         }
     }
 
-    public override readonly string ToString()
+    public override string ToString()
     {
         return (Main + " " + Args).Trim();
     }

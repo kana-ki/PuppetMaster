@@ -1,4 +1,3 @@
-using System.Numerics;
 using Dalamud.Bindings.ImGui;
 
 namespace PuppetMaster.UI;
@@ -7,17 +6,16 @@ internal class TriggerConfigPanel(ReactionService reactions)
 {
     private TextCommand testCommand = new();
 
-    public void Reload(int index) => testCommand = reactions.GetTestInputCommand(index);
+    public void Reload(Reaction? reaction) =>
+        testCommand = reaction is not null ? reactions.GetTestInputCommand(reaction) : new();
 
-    public void Draw(int index)
+    public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
         if (!ImGui.CollapsingHeader("Trigger", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
-        var reaction = reactions.Configuration.Reactions[index];
-        
-        DrawUseRegex(reaction, index);
+        DrawUseRegex(reaction);
 
         var labelWidth = ImGui.GetCursorPosX() + ImGui.CalcTextSize("Replacement").X + ImGui.GetStyle().ItemSpacing.X * 2;
 
@@ -33,8 +31,8 @@ internal class TriggerConfigPanel(ReactionService reactions)
             else
                 reaction.CustomPhrase = trigger;
 
-            reactions.InitializeRegex(index, true);
-            testCommand = reactions.GetTestInputCommand(index);
+            reactions.InitializeRegex(reaction, true);
+            testCommand = reactions.GetTestInputCommand(reaction);
             reactions.Configuration.Save();
         }
 
@@ -45,45 +43,28 @@ internal class TriggerConfigPanel(ReactionService reactions)
             ImGui.EndTooltip();
         }
 
-        if (reaction.UseRegex)
-        {
-            var replaceMatch = reaction.ReplaceMatch;
-            ImGui.Text("Replacement");
-            ImGui.SameLine(labelWidth);
-            if (ImGui.InputText("##Replacement", ref replaceMatch, 500))
-            {
-                reaction.ReplaceMatch = replaceMatch;
-                testCommand = reactions.GetTestInputCommand(index);
-                reactions.Configuration.Save();
-            }
-        }
-
         ImGui.Text("Test");
         ImGui.SameLine(labelWidth);
         var testInput = reaction.TestInput;
         if (ImGui.InputText("##TestInput", ref testInput, 500))
         {
             reaction.TestInput = testInput;
-            testCommand = reactions.GetTestInputCommand(index);
+            testCommand = reactions.GetTestInputCommand(reaction);
             reactions.Configuration.Save();
         }
 
         ImGui.PopItemWidth();
-
-        if (reaction.UseRegex)
-            ImGui.Text($"Matched: {testCommand.Args}");
-
-        ImGui.Text($"Result: {testCommand.Main}");
+        ImGui.Text($"Result: {testCommand}");
     }
 
-    private void DrawUseRegex(Reaction reaction, int index)
+    private void DrawUseRegex(Reaction reaction)
     {
         var useRegex = reaction.UseRegex;
         if (ImGui.Checkbox("Use Regex", ref useRegex))
         {
             reaction.UseRegex = useRegex;
-            reactions.InitializeRegex(index);
-            testCommand = reactions.GetTestInputCommand(index);
+            reactions.InitializeRegex(reaction);
+            testCommand = reactions.GetTestInputCommand(reaction);
             reactions.Configuration.Save();
         }
 
@@ -93,10 +74,9 @@ internal class TriggerConfigPanel(ReactionService reactions)
         ImGui.SameLine();
         if (ImGui.Button("Reset"))
         {
-            reaction.CustomPhrase = reactions.GetDefaultRegex(index);
-            reaction.ReplaceMatch = reactions.GetDefaultReplaceMatch();
-            reactions.InitializeRegex(index, true);
-            testCommand = reactions.GetTestInputCommand(index);
+            reaction.CustomPhrase = reactions.GetDefaultRegex(reaction);
+            reactions.InitializeRegex(reaction, true);
+            testCommand = reactions.GetTestInputCommand(reaction);
             reactions.Configuration.Save();
         }
 
