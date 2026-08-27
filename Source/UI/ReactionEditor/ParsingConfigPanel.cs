@@ -16,5 +16,12 @@ internal class ParsingConfigPanel(ReactionService reactions)
             reaction.ReplaceBrackets = replaceBrackets;
             reactions.Configuration.Save();
         }
+        
+        var motionOnly = reaction.MotionOnly;
+        if (ImGui.Checkbox("Append \"motion\" to emote commands", ref motionOnly))
+        {
+            reaction.MotionOnly = motionOnly;
+            reactions.Configuration.Save();
+        }
     }
 }

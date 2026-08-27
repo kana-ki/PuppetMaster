@@ -19,13 +19,6 @@ internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emo
         if (!ImGui.CollapsingHeader("Allowed commands", ImGuiTreeNodeFlags.DefaultOpen))
             return;
         
-        var motionOnly = reaction.MotionOnly;
-        if (ImGui.Checkbox("Motion only", ref motionOnly))
-        {
-            reaction.MotionOnly = motionOnly;
-            reactions.Configuration.Save();
-        }
-
         ImGui.SetNextItemWidth(200);
         var mode = (int)reaction.FilterMode;
         if (ImGui.Combo("##CommandFilterMode", ref mode, FilterModes, FilterModes.Length))
