@@ -14,8 +14,8 @@ public class Plugin : IDalamudPlugin
     private const string CommandName = "/puppetmaster";
     private const string CommandName2 = "/puppet";
     private const string CommandHelp = @"Open settings dialog
-/puppetmaster on|off - enable or disable all reactions
-/puppetmaster on|off <ReactionName> - enable or disable reactions by name";
+/{0} on|off - enable or disable all reactions
+/{0 on|off <ReactionName> - enable or disable reactions by name";
 
     private readonly ServiceProvider provider;
     private readonly WindowSystem windowSystem = new("PuppetMaster");

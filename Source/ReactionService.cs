@@ -37,7 +37,7 @@ internal class ReactionService
 
     public string GetDefaultRegex(Reaction reaction) =>
         !reaction.TriggerPhrase.IsNullOrWhitespace()
-             ? @"(?i)\b(" + reaction.TriggerPhrase + @")\b"
+             ? @"(?i)\b(" + reaction.TriggerPhrase + @")(?=\s)"
              : @"";
 
     // Relying on initalization is not reliable, and
