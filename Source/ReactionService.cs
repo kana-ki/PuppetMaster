@@ -51,18 +51,12 @@ internal class ReactionService
 
     public void InitializeRegex(Reaction reaction, bool reload = false)
     {
-        if (reaction.UseRegex && (reload || reaction.CustomRx == null))
-            try
-            {
+        try {
+            if (reaction.UseRegex && (reload || reaction.CustomRx == null))
                 reaction.CustomRx = new Regex(reaction.CustomPhrase);
-            }
-            catch (Exception) { }
-        else if (reload || reaction.Rx == null)
-            try
-            {
-                reaction.Rx = new Regex(GetDefaultRegex(reaction));
-            }
-            catch (Exception) { }
+            reaction.Rx = new Regex(GetDefaultRegex(reaction));
+        }
+        catch (Exception) { }
     }
 
     // todo: remove later, redundant middleman smell
