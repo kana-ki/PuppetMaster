@@ -3,6 +3,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using System;
+using Dalamud.Utility;
 using ECommons;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,8 +15,9 @@ public class Plugin : IDalamudPlugin
     private const string CommandName = "/puppetmaster";
     private const string CommandName2 = "/puppet";
     private const string CommandHelp = @"Open settings dialog
-/{0} on|off - enable or disable all reactions
-/{0 on|off <ReactionName> - enable or disable reactions by name";
+{0} on|off - enable or disable all reactions
+{0} on|off <ReactionName> - enable or disable reactions by name
+{0} history - show the parsed command history";
 
     private readonly ServiceProvider provider;
     private readonly WindowSystem windowSystem = new("PuppetMaster");
@@ -27,6 +29,7 @@ public class Plugin : IDalamudPlugin
     private readonly ReactionService reactions;
     private readonly ChatHandler chatHandler;
     private readonly UI.PuppetMasterWindow configWindow;
+    private readonly UI.CommandHistoryWindow historyWindow;
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
@@ -45,17 +48,21 @@ public class Plugin : IDalamudPlugin
            .AddSingleton<WorldRegistry>()
            .AddSingleton<ChatHandler>()
            .AddSingleton<CommandParser>()
+           .AddSingleton<CommandManager>()
            .AddSingleton<UI.PuppetMasterWindow>()
+           .AddSingleton<UI.CommandHistoryWindow>()
            .BuildServiceProvider();
 
         reactions = provider.GetRequiredService<ReactionService>();
         chatHandler = provider.GetRequiredService<ChatHandler>();
         configWindow = provider.GetRequiredService<UI.PuppetMasterWindow>();
+        historyWindow = provider.GetRequiredService<UI.CommandHistoryWindow>();
 
         windowSystem.AddWindow(configWindow);
+        windowSystem.AddWindow(historyWindow);
 
-        commandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
-        commandManager.AddHandler(CommandName2, new CommandInfo(OnCommand) { HelpMessage = CommandHelp });
+        commandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = CommandHelp.Format(CommandName) });
+        commandManager.AddHandler(CommandName2, new CommandInfo(OnCommand) { HelpMessage = CommandHelp.Format(CommandName2) });
 
         chatGui.ChatMessage += chatHandler.OnChatMessage;
         this.pluginInterface.UiBuilder.Draw += windowSystem.Draw;
@@ -100,6 +107,8 @@ public class Plugin : IDalamudPlugin
             enableReactions(true);
         else if (subCommand.Main.Equals("/off"))
             enableReactions(false);
+        else if (subCommand.Main.Equals("/history"))
+            historyWindow.IsOpen = true;
     }
 
     private void DrawConfigUI()

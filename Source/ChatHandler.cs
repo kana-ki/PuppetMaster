@@ -3,12 +3,11 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using System.Linq;
 using Dalamud.Game.Chat;
-using ECommons.Automation;
 using ECommons.GameHelpers;
 
 namespace PuppetMaster;
 
-internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes, CommandParser parser)
+internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes, CommandParser parser, CommandManager commandManager)
 {
     public void OnChatMessage(IHandleableChatMessage message)
     {
@@ -21,7 +20,7 @@ internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes
             var command = CheckAndPrepareCommand(reaction, message.LogKind, message.Message.ToString(), sender);
             if (command is not null)
             {
-                Chat.SendMessage($"{command}");
+                commandManager.Execute(sender, command);
                 break;
             }
         }

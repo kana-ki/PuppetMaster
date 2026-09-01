@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 
 namespace PuppetMaster.UI;
@@ -12,15 +13,25 @@ internal class PuppetMasterWindow : Window, IDisposable
     private readonly ReactionService _reactionService;
     private readonly ReactionListPanel _listPanel;
     private readonly ReactionEditor _editorPanel;
+    private readonly CommandHistoryWindow _historyWindow;
 
-    public PuppetMasterWindow(ReactionService reactionService, EmoteRegistry emotes, WorldRegistry worlds) : base(Name)
+    public PuppetMasterWindow(ReactionService reactionService, EmoteRegistry emotes, WorldRegistry worlds, CommandHistoryWindow historyWindow) : base(Name)
     {
         this._reactionService = reactionService;
+        this._historyWindow = historyWindow;
         this._editorPanel = new ReactionEditor(reactionService, emotes, worlds);
         this._listPanel = new ReactionListPanel(reactionService, OnReactionSelected);
 
         Size = new Vector2(720, 520);
         SizeCondition = ImGuiCond.FirstUseEver;
+
+        TitleBarButtons.Add(new TitleBarButton
+        {
+            Icon = FontAwesomeIcon.History,
+            IconOffset = new Vector2(2, 1),
+            Click = _ => _historyWindow.IsOpen = true,
+            ShowTooltip = () => ImGui.SetTooltip("Open command history"),
+        });
     }
 
     public override void PreDraw()
