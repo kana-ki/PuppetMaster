@@ -1,6 +1,12 @@
 using Dalamud.Utility;
 using System;
+using System.Buffers.Text;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Text.Unicode;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Plugin.Services;
 
 namespace PuppetMaster;
 
@@ -8,13 +14,15 @@ internal class ReactionService
 {
     private readonly ConfigurationProvider _configurationProvider;
     private readonly CommandParser _parser;
+    private readonly IPluginLog _log;
 
     public Configuration Configuration => _configurationProvider.Configuration;
 
-    public ReactionService(ConfigurationProvider configurationProvider, CommandParser parser)
+    public ReactionService(ConfigurationProvider configurationProvider, IPluginLog log, CommandParser parser)
     {
         this._configurationProvider = configurationProvider;
         this._parser = parser;
+        this._log = log;
         InitializeRegex();
     }
 
@@ -33,6 +41,24 @@ internal class ReactionService
             if (reaction.Name.Equals(name, sc))
                 reaction.Enabled = enabled;
         Configuration.Save();
+    }
+
+    public void ExportReactionToClipboard(Reaction? reaction)
+    {
+        var json = JsonSerializer.Serialize(reaction);
+        var jsonBytes = Encoding.UTF8.GetBytes(json);
+        var base64 = Convert.ToBase64String(jsonBytes);
+        ImGui.SetClipboardText(base64);
+    }
+
+    public Reaction? ImportFromClipboard()
+    {
+        var base64 = ImGui.GetClipboardText();
+        var base64Bytes = Convert.FromBase64String(base64);
+        var json = Encoding.UTF8.GetString(base64Bytes);
+        var reaction =  JsonSerializer.Deserialize<Reaction>(json);
+        reaction?.Enabled = false;
+        return reaction;
     }
 
     public string GetDefaultRegex(Reaction reaction) =>

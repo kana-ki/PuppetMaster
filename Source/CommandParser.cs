@@ -5,7 +5,7 @@ using Dalamud.Utility;
 
 namespace PuppetMaster;
 
-public class CommandParser(IPluginLog logger)
+public class CommandParser
 {
     public TextCommand? Parse(Reaction reaction, string input)
     {
@@ -22,8 +22,6 @@ public class CommandParser(IPluginLog logger)
 
     public TextCommand? Parse(Regex? regex, string input)
     {
-        logger.Debug($"Parsing input {input} with Regex {regex}");
-
         if (regex is null)
             return null;
         if (regex.ToString().IsNullOrWhitespace())
@@ -40,10 +38,8 @@ public class CommandParser(IPluginLog logger)
         var breakAtBracket = false;
         foreach (var @char in command)
         {
-            logger.Debug($"Evaluating character: {@char}");
             if (escapeNext)
             {
-                logger.Debug($"Character escaped, unconditionally appending");
                 commandStringBuilder.Append(@char);
                 escapeNext = false;
                 continue;
@@ -51,7 +47,6 @@ public class CommandParser(IPluginLog logger)
             
             if (@char == '\\')
             {
-                logger.Debug($"Character is escape char, will skip next, moving to next");
                 escapeNext = true;
                 continue;
             }
@@ -63,16 +58,10 @@ public class CommandParser(IPluginLog logger)
             }
             
             if (breakAtBracket && @char == ')')
-            {
-                logger.Debug($"Character is ) and breakAtBracket is true, completing parse");
                 break;
-            }
 
             if (!breakAtBracket && @char == ' ')
-            {
-                logger.Debug($"Found white space and breakAtBracket is false, completing parse");
                 break;
-            }
             
             commandStringBuilder.Append(@char);
         }
@@ -81,9 +70,7 @@ public class CommandParser(IPluginLog logger)
             return null;
         
         var parsedCommand = commandStringBuilder.ToString();
-        logger.Debug($"Completed parse is {parsedCommand}");
         var textCommand = new TextCommand(parsedCommand);
-        logger.Debug($"Result is {textCommand}");
         return textCommand;
     }
 }

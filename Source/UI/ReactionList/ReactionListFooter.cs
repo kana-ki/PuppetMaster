@@ -6,9 +6,9 @@ using Dalamud.Interface.Components;
 
 namespace PuppetMaster.UI;
 
-internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> onSelect)
+internal class ReactionListFooter(ReactionService reactionService, Action<Reaction?> onSelect)
 {
-    private const int ButtonCount = 3;
+    private const int ButtonCount = 5;
     private Reaction? _selectedReaction;
 
     public void Draw()
@@ -26,7 +26,15 @@ internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> o
         ImGui.SameLine();
         if (DrawIconButton(FontAwesomeIcon.Clone, buttonSize, "Duplicate reaction", disabled: !hasSelection))
             DuplicateReaction();
-
+        
+        ImGui.SameLine();
+        if (DrawIconButton(FontAwesomeIcon.FileExport, buttonSize, "Export reaction to clipboard"))
+            ExportToClipboard();
+        
+        ImGui.SameLine();
+        if (DrawIconButton(FontAwesomeIcon.FileImport, buttonSize, "Import reaction from clipboard"))
+            ImportFromClipboard();
+        
         ImGui.SameLine();
         if (DrawIconButton(FontAwesomeIcon.Trash, buttonSize,
                            canDelete ? "Delete reaction" : "Hold Shift + Ctrl to delete",
@@ -36,6 +44,7 @@ internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> o
         ImGui.PopStyleVar();
     }
 
+
     public void Load(Reaction reaction)
     {
         _selectedReaction = reaction;
@@ -43,10 +52,24 @@ internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> o
 
     private void AddReaction()
     {
-        var newReaction = reactions.NewReaction();
-        reactions.Configuration.Reactions.Add(reactions.NewReaction());
-        reactions.Configuration.Save();
+        var newReaction = reactionService.NewReaction();
+        reactionService.Configuration.Reactions.Add(reactionService.NewReaction());
+        reactionService.Configuration.Save();
         onSelect(newReaction);
+    }
+    
+    private void ExportToClipboard()
+    {
+        reactionService.ExportReactionToClipboard(_selectedReaction);
+    }
+
+    private void ImportFromClipboard()
+    {
+        var reaction = reactionService.ImportFromClipboard();
+        if (reaction is null)
+            return;
+        reactionService.Configuration.Reactions.Add(reaction);
+        reactionService.Configuration.Save();
     }
 
     private void DuplicateReaction()
@@ -55,8 +78,8 @@ internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> o
             return; 
         
         var clone = this._selectedReaction.Clone();
-        reactions.Configuration.Reactions.Add(clone);
-        reactions.Configuration.Save();
+        reactionService.Configuration.Reactions.Add(clone);
+        reactionService.Configuration.Save();
         onSelect(clone);
     }
 
@@ -65,8 +88,8 @@ internal class ReactionListFooter(ReactionService reactions, Action<Reaction?> o
         if (this._selectedReaction is null)
             return; 
 
-        reactions.Configuration.Reactions.Remove(this._selectedReaction);
-        reactions.Configuration.Save();
+        reactionService.Configuration.Reactions.Remove(this._selectedReaction);
+        reactionService.Configuration.Save();
         onSelect(null);
     }
 
