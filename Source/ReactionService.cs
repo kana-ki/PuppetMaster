@@ -53,12 +53,22 @@ internal class ReactionService
 
     public Reaction? ImportFromClipboard()
     {
-        var base64 = ImGui.GetClipboardText();
-        var base64Bytes = Convert.FromBase64String(base64);
-        var json = Encoding.UTF8.GetString(base64Bytes);
-        var reaction =  JsonSerializer.Deserialize<Reaction>(json);
-        reaction?.Enabled = false;
-        return reaction;
+        try
+        {
+            var base64 = ImGui.GetClipboardText();
+            if (base64.IsNullOrEmpty())
+                return null;
+            var base64Bytes = Convert.FromBase64String(base64);
+            var json = Encoding.UTF8.GetString(base64Bytes);
+            var reaction = JsonSerializer.Deserialize<Reaction>(json);
+            reaction?.Enabled = false;
+            return reaction;
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, "Failed to import reaction from clipboard");
+            return null;
+        }
     }
 
     public string GetDefaultRegex(Reaction reaction) =>
