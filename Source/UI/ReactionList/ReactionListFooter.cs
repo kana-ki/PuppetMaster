@@ -55,6 +55,7 @@ internal class ReactionListFooter(ReactionService reactionService, Action<Reacti
         var newReaction = reactionService.NewReaction();
         reactionService.Configuration.Reactions.Add(newReaction);
         reactionService.Configuration.Save();
+        _selectedReaction = newReaction;
         onSelect(newReaction);
     }
     
@@ -70,6 +71,8 @@ internal class ReactionListFooter(ReactionService reactionService, Action<Reacti
             return;
         reactionService.Configuration.Reactions.Add(reaction);
         reactionService.Configuration.Save();
+        _selectedReaction = reaction;
+        onSelect(reaction);
     }
 
     private void DuplicateReaction()
@@ -81,6 +84,7 @@ internal class ReactionListFooter(ReactionService reactionService, Action<Reacti
         reactionService.Configuration.Reactions.Add(clone);
         reactionService.Configuration.Save();
         onSelect(clone);
+        _selectedReaction = clone;
     }
 
     private void DeleteReaction()
@@ -91,6 +95,7 @@ internal class ReactionListFooter(ReactionService reactionService, Action<Reacti
         reactionService.Configuration.Reactions.Remove(this._selectedReaction);
         reactionService.Configuration.Save();
         onSelect(null);
+        this._selectedReaction = null;
     }
 
     private static bool DrawIconButton(FontAwesomeIcon icon, Vector2 size, string tooltip, bool disabled = false)
