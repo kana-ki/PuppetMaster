@@ -18,7 +18,7 @@ internal class ParsingConfigPanel(ReactionService reactions)
         }
         
         var motionOnly = reaction.MotionOnly;
-        if (ImGui.Checkbox("Append \"motion\" to emote commands", ref motionOnly))
+        if (ImGui.Checkbox("Display log message for emote commands", ref motionOnly))
         {
             reaction.MotionOnly = motionOnly;
             reactions.Configuration.Save();
