@@ -8,7 +8,7 @@ namespace PuppetMaster.UI;
 internal class ReactionListPanel
 {
     private readonly ReactionService _reactionService;
-    private readonly Action<Reaction> _onReactionSelected;
+    private readonly Action<Reaction?> _onReactionSelected;
     private readonly ReactionListFooter _footer;
     private Reaction? _selectedReaction;
 

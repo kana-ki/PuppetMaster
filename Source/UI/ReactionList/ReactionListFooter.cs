@@ -28,7 +28,7 @@ internal class ReactionListFooter(ReactionService reactionService, Action<Reacti
             DuplicateReaction();
         
         ImGui.SameLine();
-        if (DrawIconButton(FontAwesomeIcon.FileExport, buttonSize, "Export reaction to clipboard"))
+        if (DrawIconButton(FontAwesomeIcon.FileExport, buttonSize, "Export reaction to clipboard", disabled: !hasSelection))
             ExportToClipboard();
         
         ImGui.SameLine();
@@ -53,7 +53,7 @@ internal class ReactionListFooter(ReactionService reactionService, Action<Reacti
     private void AddReaction()
     {
         var newReaction = reactionService.NewReaction();
-        reactionService.Configuration.Reactions.Add(reactionService.NewReaction());
+        reactionService.Configuration.Reactions.Add(newReaction);
         reactionService.Configuration.Save();
         onSelect(newReaction);
     }

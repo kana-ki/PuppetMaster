@@ -1,10 +1,9 @@
 using Dalamud.Utility;
 using System;
-using System.Buffers.Text;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Text.Unicode;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Plugin.Services;
 
@@ -73,7 +72,7 @@ internal class ReactionService
 
     public string GetDefaultRegex(Reaction reaction) =>
         !reaction.TriggerPhrase.IsNullOrWhitespace()
-             ? @"(?i)\b(" + reaction.TriggerPhrase + @")(?=\s)"
+             ? @"(?i)\b(" + string.Join("|",reaction.TriggerPhrase.Split("|").Select(Regex.Escape)) + @")(?=\s)"
              : @"";
 
     // Relying on initalization is not reliable, and
@@ -89,8 +88,8 @@ internal class ReactionService
     {
         try {
             if (reaction.UseRegex && (reload || reaction.CustomRx == null))
-                reaction.CustomRx = new Regex(reaction.CustomPhrase);
-            reaction.Rx = new Regex(GetDefaultRegex(reaction));
+                reaction.CustomRx = new Regex(reaction.CustomPhrase,  RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(30));
+            reaction.Rx = new Regex(GetDefaultRegex(reaction), RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(30));
         }
         catch (Exception) { }
     }

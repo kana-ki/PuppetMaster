@@ -30,8 +30,6 @@ internal class EmoteRegistry
         }
         if (emotes.Count == 0)
             this.logger.Error($"Failed to build Emotes list");
-
-        emotes = emotes.Order().ToHashSet();
     }
 
     public bool IsEmote(string command) => emotes.Contains(command);
@@ -39,7 +37,7 @@ internal class EmoteRegistry
 
     public void AddAllTo(List<string> list)
     {
-        foreach (var emote in emotes)
+        foreach (var emote in emotes.Order())
             if (!list.Contains(emote))
                 list.Add(emote);
     }
