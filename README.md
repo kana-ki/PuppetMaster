@@ -6,9 +6,9 @@ This is a fork of the original PuppetMaster from [DodingDaga](https://github.com
 ## Difference
 
 This variant of PuppetMaster adds:
-- Redesigned UI
+- Redesigned, simpler UI
 - Ability to filter players
-- Ability to filter commands
+- Ability to filter commands (now in original)
 - Ability to set different permissions for different channels/players for the same trigger
 - Ability to clone, export and import reaction profiles
 - Adjustments to allow for commands that need ) or [] characters
