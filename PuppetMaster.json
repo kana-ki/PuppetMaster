@@ -3,8 +3,8 @@
     "Author": "Kana Ki (originally DodingDaga)",
     "Name": "Puppet Master",
     "InternalName": "puppetmaster",
-    "AssemblyVersion": "9.0.0.0",
-    "TestingAssemblyVersion": "11.7.0.0",
+    "AssemblyVersion": "12.0.0.0",
+    "TestingAssemblyVersion": "12.0.0.0",
     "Description": "Allows others to control you via the game's text commands",
     "Punchline": "Let others tell you what to do.",
     "ApplicableVersion": "any",
@@ -17,8 +17,8 @@
     "LoadPriority": 0,
     "IsHide": false,
     "IsTestingExclusive": false,
-    "DownloadLinkInstall": "https://github.com/kana-ki/PuppetMaster/releases/download/v9.0.0/latest.zip",
-    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v11.7.0/latest.zip",
-    "DownloadLinkUpdate": "https://github.com/kana-ki/PuppetMaster/releases/download/v9.0.0/latest.zip"
+    "DownloadLinkInstall": "https://github.com/kana-ki/PuppetMaster/releases/download/v12.0.0/latest.zip",
+    "DownloadLinkTesting": "https://github.com/kana-ki/PuppetMaster/releases/download/v12.0.0/latest.zip",
+    "DownloadLinkUpdate": "https://github.com/kana-ki/PuppetMaster/releases/download/v12.0.0/latest.zip"
   }
 ]
