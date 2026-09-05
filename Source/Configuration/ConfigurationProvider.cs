@@ -7,13 +7,13 @@ internal class ConfigurationProvider
 {
     private const uint CHANNEL_COUNT = 23;
 
-    private readonly EmoteRegistry emotes;
+    private readonly CommandRegistry _commands;
 
     public Configuration Configuration { get; }
 
-    public ConfigurationProvider(IDalamudPluginInterface pluginInterface, EmoteRegistry emotes)
+    public ConfigurationProvider(IDalamudPluginInterface pluginInterface, CommandRegistry commands)
     {
-        this.emotes = emotes;
+        this._commands = commands;
         Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(pluginInterface);
         Migrate();
@@ -26,7 +26,7 @@ internal class ConfigurationProvider
     public Reaction NewReaction(string name = "Reaction")
     {
         var reaction = new Reaction { Name = name, FilterMode = CommandFilterMode.AllowOnly };
-        emotes.AddAllTo(reaction.CommandWhitelist);
+        _commands.AddAllEmotesTo(reaction.CommandWhitelist);
         return reaction;
     }
 
@@ -51,7 +51,7 @@ internal class ConfigurationProvider
         reaction.Rx = null;
         reaction.ReplaceBrackets = true;
         reaction.FilterMode = CommandFilterMode.AllowOnly;
-        emotes.AddAllTo(reaction.CommandWhitelist);
+        _commands.AddAllEmotesTo(reaction.CommandWhitelist);
         
         if (reaction.AllowSit)
         {

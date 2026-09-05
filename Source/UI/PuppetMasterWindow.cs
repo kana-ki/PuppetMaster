@@ -15,11 +15,11 @@ internal class PuppetMasterWindow : Window, IDisposable
     private readonly ReactionEditor _editorPanel;
     private readonly CommandHistoryWindow _historyWindow;
 
-    public PuppetMasterWindow(ReactionService reactionService, EmoteRegistry emotes, WorldRegistry worlds, CommandHistoryWindow historyWindow) : base(Name)
+    public PuppetMasterWindow(ReactionService reactionService, CommandRegistry commands, WorldRegistry worlds, CommandHistoryWindow historyWindow) : base(Name)
     {
         this._reactionService = reactionService;
         this._historyWindow = historyWindow;
-        this._editorPanel = new ReactionEditor(reactionService, emotes, worlds);
+        this._editorPanel = new ReactionEditor(reactionService, commands, worlds);
         this._listPanel = new ReactionListPanel(reactionService, OnReactionSelected);
 
         Size = new Vector2(720, 520);

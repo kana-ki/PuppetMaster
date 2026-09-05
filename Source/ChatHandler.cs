@@ -7,7 +7,7 @@ using ECommons.GameHelpers;
 
 namespace PuppetMaster;
 
-internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes, CommandParser parser, CommandManager commandManager)
+internal class ChatHandler(ReactionService reactionService, CommandRegistry commands, CommandParser parser, CommandManager commandManager)
 {
     public void OnChatMessage(IHandleableChatMessage message)
     {
@@ -76,7 +76,7 @@ internal class ChatHandler(ReactionService reactionService, EmoteRegistry emotes
         if (!IsCommandAllowed(reaction, textCommand.Main))
             return null;
         
-        if (reaction.MotionOnly && emotes.IsMotionable(textCommand.Main))
+        if (reaction.MotionOnly && commands.IsMotionable(textCommand.Main))
             textCommand.Args = "motion";
         
         return textCommand;

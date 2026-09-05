@@ -3,14 +3,14 @@ using Dalamud.Bindings.ImGui;
 
 namespace PuppetMaster.UI;
 
-internal class ReactionEditor(ReactionService reactionService, EmoteRegistry emotes, WorldRegistry worlds)
+internal class ReactionEditor(ReactionService reactionService, CommandRegistry commands, WorldRegistry worlds)
 {
     private static readonly Vector4 EnabledColor = new(0.24f, 0.52f, 0.24f, 1f);
     private static readonly Vector4 DisabledColor = new(0.55f, 0.24f, 0.24f, 1f);
 
     private readonly TriggerConfigPanel _triggerPanel = new(reactionService);
     private readonly ParsingConfigPanel _parsingPanel = new(reactionService);
-    private readonly AllowedCommandsPanel _commandsPanel = new(reactionService, emotes);
+    private readonly AllowedCommandsPanel _commandsPanel = new(reactionService, commands);
     private readonly AllowedPlayersPanel _playersPanel = new(reactionService, worlds);
     private readonly AllowedChannelsPanel _channelsPanel = new(reactionService);
 

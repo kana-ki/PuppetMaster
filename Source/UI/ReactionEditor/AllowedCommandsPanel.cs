@@ -6,7 +6,7 @@ using Dalamud.Interface.Components;
 
 namespace PuppetMaster.UI;
 
-internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emotes)
+internal class AllowedCommandsPanel(ReactionService reactions, CommandRegistry commands)
 {
     private const float PanelWidth = 300f;
     private static readonly string[] FilterModes = ["Allow all", "Allow only:", "Allow all except:"];
@@ -28,20 +28,36 @@ internal class AllowedCommandsPanel(ReactionService reactions, EmoteRegistry emo
         }
 
         if (reaction.FilterMode == CommandFilterMode.AllowOnly)
-            DrawCommandList(reaction.CommandWhitelist);
+            DrawAllowedOnlyCommandList(reaction);
         else if (reaction.FilterMode == CommandFilterMode.AllowAllExcept)
-            DrawCommandList(reaction.CommandBlacklist);
+            DrawAllowAllExceptCommandList(reaction);
+    }
+
+    private void DrawAllowedOnlyCommandList(Reaction reaction)
+    {
+        if (ImGuiExtensions.Link("Add all emotes"))
+        {
+            commands.AddAllEmotesTo(reaction.CommandWhitelist);
+            reactions.Configuration.Save();
+        }
+        DrawCommandList(reaction.CommandWhitelist);
+    }
+
+    private void DrawAllowAllExceptCommandList(Reaction reaction)
+    {
+        if (ImGuiExtensions.Link("Add recommended exceptions"))
+        {
+            commands.AddAllDestructiveCommandsTo(reaction.CommandBlacklist);
+            reactions.Configuration.Save();
+        }
+        DrawCommandList(reaction.CommandBlacklist);
     }
 
     private void DrawCommandList(List<string> list)
     {
         var leftX = ImGui.GetCursorPosX();
 
-        if (ImGuiExtensions.Link("Add all emotes"))
-        {
-            emotes.AddAllTo(list);
-            reactions.Configuration.Save();
-        }
+        
 
         ImGui.SameLine(leftX + PanelWidth - ImGui.CalcTextSize("Clear").X);
         if (ImGuiExtensions.Link("Clear"))

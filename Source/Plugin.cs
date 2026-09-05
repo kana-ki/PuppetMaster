@@ -44,7 +44,7 @@ public class Plugin : IDalamudPlugin
            // App services
            .AddSingleton<ConfigurationProvider>()
            .AddSingleton<ReactionService>()
-           .AddSingleton<EmoteRegistry>()
+           .AddSingleton<CommandRegistry>()
            .AddSingleton<WorldRegistry>()
            .AddSingleton<ChatHandler>()
            .AddSingleton<CommandParser>()
