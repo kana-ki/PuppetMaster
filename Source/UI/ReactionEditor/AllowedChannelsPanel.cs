@@ -1,3 +1,4 @@
+using System.Numerics;
 using Dalamud.Bindings.ImGui;
 
 namespace PuppetMaster.UI;
@@ -7,7 +8,18 @@ internal class AllowedChannelsPanel(ReactionService reactions)
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        if (!ImGui.CollapsingHeader("Allowed channels", ImGuiTreeNodeFlags.DefaultOpen))
+        var expanded = ImGui.CollapsingHeader("Allowed channels", ImGuiTreeNodeFlags.DefaultOpen);
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted($"What channels should you listen to commands in");
+            ImGui.EndTooltip();
+        }
+
+        if (!expanded)
+            return;
+        
+        if (!ImGui.BeginTable("##AllowedChannels", 4, ImGuiTableFlags.SizingStretchSame))
             return;
 
         for (var channelIndex = 16; channelIndex < 23; ++channelIndex)
@@ -18,11 +30,14 @@ internal class AllowedChannelsPanel(ReactionService reactions)
 
         for (var channelIndex = 8; channelIndex < 16; ++channelIndex)
             DrawChannelCheckbox(reaction, channelIndex);
+        
+        ImGui.EndTable();
     }
 
     private void DrawChannelCheckbox(Reaction reaction, int channelIndex)
     {
-        if (channelIndex % 4 != 0) ImGui.SameLine();
+        if (channelIndex % 4 == 0) ImGui.TableNextRow();
+        ImGui.TableNextColumn();
 
         var channel = reactions.Configuration.EnabledChannels[channelIndex];
         var enabled = reaction.EnabledChannels.Contains(channel.ChatType);
@@ -35,13 +50,6 @@ internal class AllowedChannelsPanel(ReactionService reactions)
                 reaction.EnabledChannels.Remove(channel.ChatType);
 
             reactions.Configuration.Save();
-        }
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted($"ID:{channel.ChatType}");
-            ImGui.EndTooltip();
         }
     }
 }

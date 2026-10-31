@@ -16,7 +16,15 @@ internal class AllowedCommandsPanel(ReactionService reactions, CommandRegistry c
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        if (!ImGui.CollapsingHeader("Allowed commands", ImGuiTreeNodeFlags.DefaultOpen))
+        var expanded = ImGui.CollapsingHeader("Allowed commands", ImGuiTreeNodeFlags.DefaultOpen);
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted($"What commands should you listen to");
+            ImGui.EndTooltip();
+        }
+
+        if (!expanded)
             return;
         
         ImGui.SetNextItemWidth(200);

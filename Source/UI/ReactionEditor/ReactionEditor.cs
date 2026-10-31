@@ -11,7 +11,8 @@ internal class ReactionEditor(ReactionService reactionService, CommandRegistry c
     private readonly TriggerConfigPanel _triggerPanel = new(reactionService);
     private readonly ParsingConfigPanel _parsingPanel = new(reactionService);
     private readonly AllowedCommandsPanel _commandsPanel = new(reactionService, commands);
-    private readonly AllowedPlayersPanel _playersPanel = new(reactionService, worlds);
+    private readonly AllowedPlayersPanel _senders = new(reactionService, worlds);
+    private readonly EnabledReceivers _receivers = new(reactionService, worlds);
     private readonly AllowedChannelsPanel _channelsPanel = new(reactionService);
 
     private Reaction? _reaction;
@@ -36,8 +37,9 @@ internal class ReactionEditor(ReactionService reactionService, CommandRegistry c
         _triggerPanel.Draw(this._reaction);
         _parsingPanel.Draw(this._reaction);
         _commandsPanel.Draw(this._reaction);
-        _playersPanel.Draw(this._reaction);
+        _senders.Draw(this._reaction);
         _channelsPanel.Draw(this._reaction);
+        _receivers.Draw(this._reaction);
     }
 
     private void DrawHeader(Reaction reaction)

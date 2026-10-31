@@ -20,6 +20,9 @@ public class Reaction
     public List<string> CommandBlacklist { get; set; } = [];
     public SenderFilterMode SenderFilterMode { get; set; } = SenderFilterMode.AllowEveryone;
     public List<PlayerId> AllowedSenders { get; set; } = [];
+    public ReceiverFilterMode ReceiverFilterMode { get; set; } = ReceiverFilterMode.EnableAllCharacters;
+    public List<PlayerId> EnabledReceivers { get; set; } = [];
+
     public Regex? Rx;
     public Regex? CustomRx;
 
@@ -39,9 +42,11 @@ public class Reaction
         FilterMode = FilterMode,
         ReplaceBrackets = ReplaceBrackets,
         SenderFilterMode = SenderFilterMode,
+        ReceiverFilterMode = ReceiverFilterMode,
         EnabledChannels = [.. EnabledChannels],
         CommandWhitelist = [.. CommandWhitelist],
         CommandBlacklist = [.. CommandBlacklist],
         AllowedSenders = [.. AllowedSenders.Select(p => new PlayerId { Name = p.Name, World = p.World })],
+        EnabledReceivers = [.. EnabledReceivers.Select(p => new PlayerId { Name = p.Name, World = p.World })],
     };
 }

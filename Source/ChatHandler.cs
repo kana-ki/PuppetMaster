@@ -1,13 +1,15 @@
+using System;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using System.Linq;
 using Dalamud.Game.Chat;
+using Dalamud.Plugin.Services;
 using ECommons.GameHelpers;
 
 namespace PuppetMaster;
 
-internal class ChatHandler(ReactionService reactionService, CommandRegistry commands, CommandParser parser, CommandManager commandManager)
+internal class ChatHandler(IObjectTable objectTable, ReactionService reactionService, CommandRegistry commands, CommandParser parser, CommandManager commandManager)
 {
     public void OnChatMessage(IHandleableChatMessage message)
     {
@@ -25,7 +27,7 @@ internal class ChatHandler(ReactionService reactionService, CommandRegistry comm
             }
         }
     }
-
+    
     private PlayerId ResolveSender(SeString sender)
     {
         var payload = sender.Payloads.OfType<PlayerPayload>().FirstOrDefault();
@@ -69,6 +71,9 @@ internal class ChatHandler(ReactionService reactionService, CommandRegistry comm
         if (!IsSenderAllowed(reaction, sender)) 
             return null;
 
+        if (!IsReceiverEnabled(reaction))
+            return null;
+
         var textCommand = parser.Parse(reaction, message);
         if (textCommand == null)
             return null;
@@ -82,5 +87,13 @@ internal class ChatHandler(ReactionService reactionService, CommandRegistry comm
         return textCommand;
     }
 
-   
+    private bool IsReceiverEnabled(Reaction reaction) =>
+        reaction.ReceiverFilterMode switch
+        {
+            ReceiverFilterMode.EnableAllCharacters => true,
+            ReceiverFilterMode.EnableOnly =>
+                reaction.EnabledReceivers.Any(p => p.Matches(Player.Name, Player.HomeWorldName)),
+            _ => false
+        };
+
 }

@@ -6,10 +6,10 @@ using Dalamud.Interface.Components;
 
 namespace PuppetMaster.UI;
 
-internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worlds)
+internal class EnabledReceivers(ReactionService reactions, WorldRegistry worlds)
 {
     private const float PanelWidth = 320f;
-    private static readonly string[] FilterModes = ["Allow everyone", "Allow only:"];
+    private static readonly string[] FilterModes = ["Enable for all of my characters", "Enable only for:"];
 
     private string nameInput = string.Empty;
     private string worldInput = string.Empty;
@@ -18,26 +18,34 @@ internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worl
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        if (!ImGui.CollapsingHeader("Allowed players", ImGuiTreeNodeFlags.DefaultOpen))
+        var expanded = ImGui.CollapsingHeader("Enabled characters", ImGuiTreeNodeFlags.DefaultOpen);
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted($"Which of your own players should listen to commands");
+            ImGui.EndTooltip();
+        }
+
+        if (!expanded)
             return;
 
         ImGui.SetNextItemWidth(250);
-        var mode = (int)reaction.SenderFilterMode;
-        if (ImGui.Combo("##SenderFilterMode", ref mode, FilterModes, FilterModes.Length))
+        var mode = (int)reaction.ReceiverFilterMode;
+        if (ImGui.Combo("##ReceiverFilterMode", ref mode, FilterModes, FilterModes.Length))
         {
-            reaction.SenderFilterMode = (SenderFilterMode)mode;
+            reaction.ReceiverFilterMode = (ReceiverFilterMode)mode;
             reactions.Configuration.Save();
         }
 
-        if (reaction.SenderFilterMode != SenderFilterMode.AllowOnly)
+        if (reaction.ReceiverFilterMode == ReceiverFilterMode.EnableAllCharacters)
             return;
 
-        ImGui.BeginChild("##AllowedSenders", new Vector2(PanelWidth, 120), true);
+        ImGui.BeginChild("##EnabledReceivers", new Vector2(PanelWidth, 120), true);
 
         var removeAt = -1;
-        for (var i = 0; i < reaction.AllowedSenders.Count; i++)
+        for (var i = 0; i < reaction.EnabledReceivers.Count; i++)
         {
-            var player = reaction.AllowedSenders[i];
+            var player = reaction.EnabledReceivers[i];
             if (ImGuiExtensions.RemovableRow(i, $"{player.Name} @ {player.World}"))
                 removeAt = i;
         }
@@ -46,29 +54,29 @@ internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worl
 
         if (removeAt >= 0)
         {
-            reaction.AllowedSenders.RemoveAt(removeAt);
+            reaction.EnabledReceivers.RemoveAt(removeAt);
             reactions.Configuration.Save();
         }
 
         ImGui.SetNextItemWidth(150);
-        ImGui.InputTextWithHint("##SenderName", "Full name", ref nameInput, 60);
+        ImGui.InputTextWithHint("##ReceiverName", "Full name", ref nameInput, 60);
 
         ImGui.SameLine();
         DrawWorldCombo();
 
         ImGui.SameLine();
-        if (ImGuiComponents.IconButton("##AddPlayer", FontAwesomeIcon.Plus))
+        if (ImGuiComponents.IconButton("##AddReceiver", FontAwesomeIcon.Plus))
             AddSender(reaction);
     }
 
     private void DrawWorldCombo()
     {
         ImGui.SetNextItemWidth(130);
-        if (!ImGui.BeginCombo("##SenderWorld", string.IsNullOrEmpty(worldInput) ? "World" : worldInput))
+        if (!ImGui.BeginCombo("##ReceiverWorld", string.IsNullOrEmpty(worldInput) ? "World" : worldInput))
             return;
 
         ImGui.SetNextItemWidth(-1);
-        ImGui.InputTextWithHint("##WorldFilter", "Filter...", ref worldFilter, 40);
+        ImGui.InputTextWithHint("##ReceiverWorldFilter", "Filter...", ref worldFilter, 40);
 
         foreach (var world in worlds.Worlds)
         {
@@ -87,8 +95,8 @@ internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worl
         var name = nameInput.Trim();
         if (name.Length == 0 || worldInput.Length == 0) return;
 
-        if (!reaction.AllowedSenders.Exists(p => p.Matches(name, worldInput)))
-            reaction.AllowedSenders.Add(new PlayerId { Name = name, World = worldInput });
+        if (!reaction.EnabledReceivers.Exists(p => p.Matches(name, worldInput)))
+            reaction.EnabledReceivers.Add(new PlayerId { Name = name, World = worldInput });
 
         reactions.Configuration.Save();
         nameInput = string.Empty;
