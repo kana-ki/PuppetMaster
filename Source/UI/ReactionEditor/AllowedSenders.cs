@@ -9,7 +9,7 @@ namespace PuppetMaster.UI;
 internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worlds)
 {
     private const float PanelWidth = 320f;
-    private static readonly string[] FilterModes = ["Allow everyone", "Allow only:"];
+    private static readonly string[] FilterModes = ["Allow commands from everyone", "Allow only commands from:"];
 
     private string nameInput = string.Empty;
     private string worldInput = string.Empty;
@@ -18,14 +18,7 @@ internal class AllowedPlayersPanel(ReactionService reactions, WorldRegistry worl
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        var expanded = ImGui.CollapsingHeader("Allowed players", ImGuiTreeNodeFlags.DefaultOpen);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted($"Whom should you listen to commands from");
-            ImGui.EndTooltip();
-        }
-
+        var expanded = ImGui.CollapsingHeader("Whom should you listen to commands from", ImGuiTreeNodeFlags.DefaultOpen);
         if (!expanded)
             return;
 

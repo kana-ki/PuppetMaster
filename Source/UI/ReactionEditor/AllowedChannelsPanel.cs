@@ -8,14 +8,7 @@ internal class AllowedChannelsPanel(ReactionService reactions)
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        var expanded = ImGui.CollapsingHeader("Allowed channels", ImGuiTreeNodeFlags.DefaultOpen);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted($"What channels should you listen to commands in");
-            ImGui.EndTooltip();
-        }
-
+        var expanded = ImGui.CollapsingHeader("What channels should you listen to commands in", ImGuiTreeNodeFlags.DefaultOpen);
         if (!expanded)
             return;
         

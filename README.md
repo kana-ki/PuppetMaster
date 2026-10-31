@@ -28,10 +28,10 @@ Find "Puppet Master" in the Plugin Installer, and hit Install.
 - Use the `/puppet` command
 - In the new window, at the bottom, click the "+" button
 - At the top, give the new Reaction profile a name
-- Write into the "Trigger" textbox your chosen trigger word
-- Below, in the "Allowed commands" section, set this to what you'd like to allow others to do on your behalf (see #safety)
-- Below, in the "Allowed players" section, set this to who you'd like to allow to control you (see #safety)
-- Below, in the "Allowed channels" section, check all the tickboxes for all the channels you want this trigger work to work in (see #safety)
+- Write into the "You trigger word" textbox your chosen trigger word
+- Below, in the "What commands should you listen to" section, set this to what you'd like to allow others to do on your behalf (see #safety)
+- Below, in the "Whom should you listen to commands from" section, set this to who you'd like to allow to control you (see #safety)
+- Below, in the "What channels should you listen to commands in" section, check all the tickboxes for all the channels you want this trigger work to work in (see #safety)
 - At the top, click to change "Disabled" to "Enabled"
   
 This trigger word will now be the word your dom can type into a channel to trigger a game command in your client.
@@ -55,7 +55,7 @@ Only use PuppetMaster with those whom you trust. The PuppetMaster plugin allows 
 ### Setting allowed players
 PuppetMaster allows you to constrain who can use your trigger word and control you via it.
 
-In the Reaction profile for the trigger, in the "Allowed players" section, while the drop down here is set to "Allow everyone", anyone with the trigger word can use it to control you and perform commands on your behalf (assuming other command/channel constraints don't apply). 
+In the Reaction profile for the trigger, in the "Whom should you listen to commands from" section, while the drop down here is set to "Allow everyone", anyone with the trigger word can use it to control you and perform commands on your behalf (assuming other command/channel constraints don't apply). 
 
 Whilst the drop down is set to "Allow only:", only Players in the list below it will be able to use the trigger word in this reaction profile. You may add players to the list box beneath by typing in the full name of the player, selecting their home world in the drop down list, and then clicking the "+" button. 
 
@@ -63,7 +63,7 @@ Whilst the drop down is set to "Allow only:", only Players in the list below it 
 
 PuppetMaster allows you to constrain what commands can be used by players that use your trigger word. 
 
-In the Reaction profile for the trigger, in the "Allowed commands" section, while the drop down here is set to "Allow all", anyone with the trigger word can use it to perform any command on your behalf (assuming other player/channel constraints don't apply). This includes /say, /shout and other chat commands, and /glamourer, /penumbra and other plugin commands. 
+In the Reaction profile for the trigger, in the "What commands should you listen to" section, while the drop down here is set to "Allow all", anyone with the trigger word can use it to perform any command on your behalf (assuming other player/channel constraints don't apply). This includes /say, /shout and other chat commands, and /glamourer, /penumbra and other plugin commands. 
 
 Whilst the drop down is set to "Allow only: ", only command in the list below it will be allowed with the trigger in this reaction profile. You may add an allowed command to the list box beneath by typing in the command in the textbox below it, and clicking the "+" button. You may also add all emotes to the list quickly via the blue "Add all emotes" link above the list box; this is equivalent to having "Allow "Sit" or "groundsit" request" checked and "Allow all text commands" unchecked in the original PuppetMaster. 
 

@@ -12,7 +12,7 @@ internal class TriggerConfigPanel(ReactionService reactions)
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        if (!ImGui.CollapsingHeader("Trigger", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("Your trigger word", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
         DrawUseRegex(reaction);

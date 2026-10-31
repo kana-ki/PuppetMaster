@@ -9,21 +9,14 @@ namespace PuppetMaster.UI;
 internal class AllowedCommandsPanel(ReactionService reactions, CommandRegistry commands)
 {
     private const float PanelWidth = 300f;
-    private static readonly string[] FilterModes = ["Allow all", "Allow only:", "Allow all except:"];
+    private static readonly string[] FilterModes = ["Allow all commands", "Allow only commands:", "Allow all commands except:"];
 
     private string commandInput = string.Empty;
 
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        var expanded = ImGui.CollapsingHeader("Allowed commands", ImGuiTreeNodeFlags.DefaultOpen);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted($"What commands should you listen to");
-            ImGui.EndTooltip();
-        }
-
+        var expanded = ImGui.CollapsingHeader("What commands should you listen to", ImGuiTreeNodeFlags.DefaultOpen);
         if (!expanded)
             return;
         

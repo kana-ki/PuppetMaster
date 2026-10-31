@@ -9,7 +9,7 @@ namespace PuppetMaster.UI;
 internal class EnabledReceivers(ReactionService reactions, WorldRegistry worlds)
 {
     private const float PanelWidth = 320f;
-    private static readonly string[] FilterModes = ["Enable for all of my characters", "Enable only for:"];
+    private static readonly string[] FilterModes = ["Allow all of my characters", "Allow only characters:"];
 
     private string nameInput = string.Empty;
     private string worldInput = string.Empty;
@@ -18,14 +18,7 @@ internal class EnabledReceivers(ReactionService reactions, WorldRegistry worlds)
     public void Draw(Reaction reaction)
     {
         ImGui.Spacing();
-        var expanded = ImGui.CollapsingHeader("Enabled characters", ImGuiTreeNodeFlags.DefaultOpen);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.TextUnformatted($"Which of your own players should listen to commands");
-            ImGui.EndTooltip();
-        }
-
+        var expanded = ImGui.CollapsingHeader("Which of your own characters should listen to commands", ImGuiTreeNodeFlags.DefaultOpen);
         if (!expanded)
             return;
 
